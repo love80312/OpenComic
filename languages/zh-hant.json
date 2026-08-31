@@ -233,7 +233,7 @@
 			"aiDescreen": "AI 網紋去除",
 			"aiUpscale": "AI 放大",
 			"aiModel": "模型",
-			"aiKeepBigHalftone": "",
+			"aiKeepBigHalftone": "保留大網點",
 			"downloadingAiModel": "正在下載 AI 模型",
 			"maxMegapixels": "最大輸入影像解析度 (百萬像素)",
 			"autoScale": "自動縮放",
@@ -331,10 +331,10 @@
 			"scrollWithMouse": "當游標位於螢幕中央垂直移動時自動滾動 (停用拖放滾動)",
 			"goNextPrevChapterWithScroll": "以滑鼠滾動切換至下一章/上一章(垂直閱讀)",
 			"turnPagesWithMouseWheel": "以滑鼠滾輪翻頁(僅按住 Ctrl 鍵時可縮放)",
-			"autodetectWebtoon": "",
+			"autodetectWebtoon": "自動偵測條漫",
 			"disableThumbnails": "停用縮圖 (顯示檔名)",
 			"mouseWheelSensitivityInZoom": "縮放時滑鼠滾輪靈敏度",
-			"zoomMoveStep": "",
+			"zoomMoveStep": "縮放移動速度",
 			"rotateHorizontalsAnticlockwise": "採逆時針方向旋轉水平圖像",
 			"startReadingInFullScreen": "啟動全螢幕閱讀",
 			"trackingAtTheEnd": "追蹤章節/卷末進度",
@@ -394,7 +394,7 @@
 				"continueReadingOrFirstPage": "繼續閱讀或第一頁"
 			},
 			"useTheFirstImageAsPoster": "使用第一張圖片作為封面(未設定封面時)",
-			"useTheFirstImageAsPosterInParentFolders": "",
+			"useTheFirstImageAsPosterInParentFolders": "使用第一張圖片作為上層資料夾的封面(僅在目前未設定時)",
 			"showFullPathLibrary": "打開書庫時顯示漫畫完整路徑",
 			"showFullPathOpened": "打開檔案或資料夾時顯示完整路徑",
 			"showLibraryPath": "在標題列中顯示書庫、收藏、標籤等",
@@ -735,6 +735,10 @@
 			{
 				"name": "Sayoko123f",
 				"url": "https://github.com/Sayoko123f"
+			},
+			{
+				"name": "昇",
+				"url": "https://github.com/love80312"
 			}
 		]
 	}
