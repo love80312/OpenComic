@@ -1,0 +1,419 @@
+name: Nightly Build
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: nightly
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.appver.outputs.app_version }}
+      version: ${{ steps.ver.outputs.version }}
+      tag: ${{ steps.ver.outputs.tag }}
+      source_sha: ${{ steps.ver.outputs.source_sha }}
+      should_build: ${{ steps.check.outputs.should_build }}
+      last_tag: ${{ steps.check.outputs.last_tag }}
+      last_sha: ${{ steps.check.outputs.last_sha }}
+
+    steps:
+      - name: Checkout source repo (OpenComic)
+        uses: actions/checkout@v6
+        with:
+          repository: ollm/OpenComic
+          ref: master
+          path: source
+          fetch-depth: 20
+
+      - name: Set App Version
+        id: appver
+        shell: bash
+        run: |
+          APP_VERSION="$(node -p "require('./source/package.json').version")"
+          echo "App version is: ${APP_VERSION}"
+          echo "app_version=${APP_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Compute version/tag from source SHA
+        id: ver
+        shell: bash
+        run: |
+          DATE="$(date -u +'%Y%m%d')"
+          SHA="$(git -C source rev-parse --short=7 HEAD)"
+          APP_VERSION="${{ steps.appver.outputs.app_version }}"
+          VERSION="Nightly-v${APP_VERSION}-${SHA}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "source_sha=${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout nightly repo (for last-tag check)
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Skip if source SHA is same as latest nightly
+        id: check
+        shell: bash
+        run: |
+          CURRENT_SHA="${{ steps.ver.outputs.source_sha }}"
+
+          git fetch --tags --force
+
+          LAST_TAG="$(git tag -l 'Nightly-*' --sort=-creatordate | head -n 1 || true)"
+          if [ -z "$LAST_TAG" ]; then
+            echo "No previous nightly tag found. Will build."
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            echo "last_tag=" >> "$GITHUB_OUTPUT"
+            echo "last_sha=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          LAST_SHA="${LAST_TAG##*-}"
+
+          echo "Latest nightly tag: $LAST_TAG"
+          echo "Latest nightly sha: $LAST_SHA"
+          echo "Current source sha: $CURRENT_SHA"
+
+          echo "last_tag=$LAST_TAG" >> "$GITHUB_OUTPUT"
+          echo "last_sha=$LAST_SHA" >> "$GITHUB_OUTPUT"
+
+          if [ "$LAST_SHA" = "$CURRENT_SHA" ]; then
+            echo "Source SHA unchanged since last nightly. Skipping build."
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Source SHA changed. Will build."
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: ${{ matrix.variant }}-${{ matrix.ext }}
+    needs: prepare
+    if: needs.prepare.outputs.should_build == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            variant: win-x64
+            build: npm run build-nsis
+            extraDeps: |
+              npm install @img-custom/sharp-win32-arm64 @img-custom/sharp-win32-x64 --force && node scripts/sharp-copy-custom.js
+            ext: exe
+
+          - os: windows-latest
+            variant: win-x64-portable
+            build: npm run build-portable
+            extraDeps: |
+              npm install @img-custom/sharp-win32-arm64 @img-custom/sharp-win32-x64 --force && node scripts/sharp-copy-custom.js
+            ext: exe
+
+          - os: windows-latest
+            variant: win-x64-folder-portable
+            build: npm run build-folder-portable
+            extraDeps: |
+              npm install @img-custom/sharp-win32-arm64 @img-custom/sharp-win32-x64 --force && node scripts/sharp-copy-custom.js
+            ext: exe
+
+          - os: windows-latest
+            variant: win-x64-folder-portable
+            build: npm run build-folder-portable-7z
+            extraDeps: |
+              npm install @img-custom/sharp-win32-arm64 @img-custom/sharp-win32-x64 --force && node scripts/sharp-copy-custom.js
+            ext: 7z
+
+          - os: windows-latest
+            variant: win-arm64
+            build: npm run build-nsis-arm
+            extraDeps: |
+              npm install @img-custom/sharp-win32-arm64 @img-custom/sharp-win32-x64 --force && node scripts/sharp-copy-custom.js
+            ext: exe
+
+          - os: ubuntu-latest
+            variant: linux-x64
+            build: npm run build-deb
+            extraDeps: |
+              npm install @img-custom/sharp-libvips-linuxmusl-x64 @img-custom/sharp-libvips-linux-x64 @img-custom/sharp-linuxmusl-x64 @img-custom/sharp-linux-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-libvips-linux-arm64 @img-custom/sharp-libvips-linuxmusl-arm64 @img-custom/sharp-linux-arm64 @img-custom/sharp-linuxmusl-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: deb
+
+          - os: ubuntu-latest
+            variant: linux-x64
+            build: npm run build-appimage
+            extraDeps: |
+              npm install @img-custom/sharp-libvips-linuxmusl-x64 @img-custom/sharp-libvips-linux-x64 @img-custom/sharp-linuxmusl-x64 @img-custom/sharp-linux-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-libvips-linux-arm64 @img-custom/sharp-libvips-linuxmusl-arm64 @img-custom/sharp-linux-arm64 @img-custom/sharp-linuxmusl-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: AppImage
+
+          - os: ubuntu-latest
+            variant: linux-x64
+            build: npm run build-flatpak
+            extraDeps: |
+              npm install @img-custom/sharp-libvips-linuxmusl-x64 @img-custom/sharp-libvips-linux-x64 @img-custom/sharp-linuxmusl-x64 @img-custom/sharp-linux-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-libvips-linux-arm64 @img-custom/sharp-libvips-linuxmusl-arm64 @img-custom/sharp-linux-arm64 @img-custom/sharp-linuxmusl-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: flatpak
+
+          - os: ubuntu-latest
+            variant: linux-x64-folder-portable
+            build: npm run build-linux-folder-portable-x64
+            extraDeps: |
+              npm install @img-custom/sharp-libvips-linuxmusl-x64 @img-custom/sharp-libvips-linux-x64 @img-custom/sharp-linuxmusl-x64 @img-custom/sharp-linux-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-libvips-linux-arm64 @img-custom/sharp-libvips-linuxmusl-arm64 @img-custom/sharp-linux-arm64 @img-custom/sharp-linuxmusl-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: 7z
+
+          - os: ubuntu-latest
+            variant: linux-arm64
+            build: npm run build-deb-arm
+            extraDeps: |
+              npm install @img-custom/sharp-libvips-linuxmusl-x64 @img-custom/sharp-libvips-linux-x64 @img-custom/sharp-linuxmusl-x64 @img-custom/sharp-linux-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-libvips-linux-arm64 @img-custom/sharp-libvips-linuxmusl-arm64 @img-custom/sharp-linux-arm64 @img-custom/sharp-linuxmusl-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: deb
+
+          - os: ubuntu-latest
+            variant: linux-arm64
+            build: npm run build-appimage-arm
+            extraDeps: |
+              npm install @img-custom/sharp-libvips-linuxmusl-x64 @img-custom/sharp-libvips-linux-x64 @img-custom/sharp-linuxmusl-x64 @img-custom/sharp-linux-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-libvips-linux-arm64 @img-custom/sharp-libvips-linuxmusl-arm64 @img-custom/sharp-linux-arm64 @img-custom/sharp-linuxmusl-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: AppImage
+
+          - os: ubuntu-latest
+            variant: linux-arm64-folder-portable
+            build: npm run build-linux-folder-portable-arm
+            extraDeps: |
+              npm install @img-custom/sharp-libvips-linuxmusl-x64 @img-custom/sharp-libvips-linux-x64 @img-custom/sharp-linuxmusl-x64 @img-custom/sharp-linux-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-libvips-linux-arm64 @img-custom/sharp-libvips-linuxmusl-arm64 @img-custom/sharp-linux-arm64 @img-custom/sharp-linuxmusl-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: 7z
+
+          # - os: ubuntu-latest
+          #   variant: linux-arm64
+          #   build: npm run build-flatpak-arm
+          #   extraDeps: |
+          #     npm install @img-custom/sharp-libvips-linuxmusl-x64 @img-custom/sharp-libvips-linux-x64 @img-custom/sharp-linuxmusl-x64 @img-custom/sharp-linux-x64 --force && node scripts/sharp-copy-custom.js
+          #     npm install @img-custom/sharp-libvips-linux-arm64 @img-custom/sharp-libvips-linuxmusl-arm64 @img-custom/sharp-linux-arm64 @img-custom/sharp-linuxmusl-arm64 --force && node scripts/sharp-copy-custom.js
+          #   ext: flatpak
+
+          - os: macos-26-intel
+            variant: mac-x64
+            build: npm run build-mac-dmg-nightly
+            extraDeps: |
+              npm install @img-custom/sharp-darwin-x64 @img-custom/sharp-libvips-darwin-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-darwin-arm64 @img-custom/sharp-libvips-darwin-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: dmg
+
+          - os: macos-26
+            variant: mac-arm64
+            build: npm run build-mac-dmg-nightly-arm
+            extraDeps: |
+              npm install @img-custom/sharp-darwin-x64 @img-custom/sharp-libvips-darwin-x64 --force && node scripts/sharp-copy-custom.js
+              npm install @img-custom/sharp-darwin-arm64 @img-custom/sharp-libvips-darwin-arm64 --force && node scripts/sharp-copy-custom.js
+            ext: dmg
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout source repo (OpenComic)
+        uses: actions/checkout@v6
+        with:
+          repository: ollm/OpenComic
+          ref: master
+          path: source
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+
+      - name: Install Node Zstd native dependencies
+        run: npm install --force
+        working-directory: source/build/node-zstd-native-dependencies
+
+      - name: Install deps
+        working-directory: source
+        # run: npm ci
+        run: npm install
+
+      - name: Install extra deps for sharp
+        working-directory: source
+        run: ${{ matrix.extraDeps }}
+
+      - name: Copy zstd native modules
+        working-directory: source
+        run: node scripts/zstd-copy-native.js
+
+      - name: Install Flatpak tooling (Linux Flatpak builds only)
+        if: startsWith(matrix.build, 'npm run build-flatpak')
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+          flatpak --version
+          flatpak-builder --version
+          flatpak remotes
+
+      - name: Install Flatpak runtime/SDK (Linux Flatpak builds only)
+        if: startsWith(matrix.build, 'npm run build-flatpak')
+        shell: bash
+        run: |
+          sudo flatpak install -y --noninteractive flathub \
+            org.freedesktop.Platform//24.08 \
+            org.freedesktop.Platform/aarch64/24.08 \
+            org.freedesktop.Sdk//24.08 \
+            org.electronjs.Electron2.BaseApp//24.08
+
+      - name: Build
+        working-directory: source
+        run: ${{ matrix.build }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+          NIGHTLY: true
+
+      - name: Collect & rename artifacts
+        shell: bash
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          VARIANT="${{ matrix.variant }}"
+          EXT="${{ matrix.ext }}"
+          mkdir -p release
+
+          find source/dist -maxdepth 1 -type f -name "*.${{ matrix.ext }}" | while read -r file; do
+            base="$(basename "$file")"
+            newname="OpenComic-${VERSION}-${VARIANT}.${EXT}"
+            cp "$file" "release/$newname"
+          done
+
+          echo "Artifacts collected:"
+          ls -la release || true
+
+      - name: Upload artifact (temporary between jobs)
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-${{ matrix.variant }}-${{ matrix.ext }}
+          path: release/*
+          retention-days: 1
+
+  release:
+    needs: [prepare, build]
+    if: needs.prepare.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout nightly repo (for README update)
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: release
+
+      - name: Flatten files
+        shell: bash
+        run: |
+          mkdir -p final
+          find release -type f -exec cp {} final/ \;
+          echo "Final files:"
+          ls -la final || true
+
+      - name: Create Release (in this repo)
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          name: OpenComic-${{ needs.prepare.outputs.tag }}
+          body: |
+            ## Automated Nightly Build
+
+            **Source Repository:** [ollm/OpenComic](https://github.com/ollm/OpenComic)
+            **Branch:** `master` 
+            **Commit:** https://github.com/ollm/OpenComic/commit/${{ needs.prepare.outputs.source_sha }}
+
+            ### Changes Since Last Nightly:
+            https://github.com/ollm/OpenComic/compare/${{ needs.prepare.outputs.last_sha }}...${{ needs.prepare.outputs.source_sha }}
+          files: final/*
+          prerelease: false
+
+      - name: Generate README builds block
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          BASE_URL="https://github.com/ollm/OpenComic-Nightly/releases/download/${VERSION}"
+
+          cat > builds.md <<EOF
+          ###### Windows
+          - [.exe](${BASE_URL}/OpenComic-${VERSION}-win-x64.exe)
+          - [portable.exe](${BASE_URL}/OpenComic-${VERSION}-win-x64-portable.exe)
+          - [folder.portable.exe](${BASE_URL}/OpenComic-${VERSION}-win-x64-folder-portable.exe)
+          - [folder.portable.7z](${BASE_URL}/OpenComic-${VERSION}-win-x64-folder-portable.7z)
+
+          ###### Windows Arm64
+          - [arm64.exe](${BASE_URL}/OpenComic-${VERSION}-win-arm64.exe)
+
+          ###### macOS
+
+          - [.dmg](${BASE_URL}/OpenComic-${VERSION}-mac-x64.dmg)
+
+          ###### macOS Arm64
+          
+          - [arm64.dmg](${BASE_URL}/OpenComic-${VERSION}-mac-arm64.dmg)
+
+          <sub>macOS nightly builds are unsigned. You may need to allow them in Security & Privacy. See: https://support.apple.com/guide/mac-help/mh40616/mac</sub>
+
+          ###### Linux
+          - [.deb](${BASE_URL}/OpenComic-${VERSION}-linux-x64.deb)
+          - [.flatpak](${BASE_URL}/OpenComic-${VERSION}-linux-x64.flatpak)
+          - [.AppImage](${BASE_URL}/OpenComic-${VERSION}-linux-x64.AppImage)
+          - [folder.portable.7z](${BASE_URL}/OpenComic-${VERSION}-linux-x64-folder-portable.7z)
+
+          ###### Linux Arm64
+          - [.deb](${BASE_URL}/OpenComic-${VERSION}-linux-arm64.deb)
+          - [arm64.AppImage](${BASE_URL}/OpenComic-${VERSION}-linux-arm64.AppImage)
+          - [arm64.folder.portable.7z](${BASE_URL}/OpenComic-${VERSION}-linux-arm64-folder-portable.7z)
+          EOF
+
+      - name: Update README
+        run: |
+          awk '
+            BEGIN { in_block=0 }
+            /<!-- builds-start -->/ { print; system("cat builds.md"); in_block=1; next }
+            /<!-- builds-end -->/   { in_block=0; print; next }
+            !in_block               { print }
+          ' README.md > README.tmp && mv README.tmp README.md
+
+      - name: Commit & push README
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add README.md
+          git commit -m "Update nightly builds (${{ needs.prepare.outputs.version }})" || echo "No changes"
+          git push
+
+      - name: Delete old releases (keep last 10)
+        uses: dev-drprasad/delete-older-releases@v0.3.3
+        with:
+          keep_latest: 10
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  skip:
+    needs: prepare
+    if: needs.prepare.outputs.should_build != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skipped
+        run: |
+          echo "Nightly build skipped because source SHA didn't change."
+          echo "Latest nightly tag: ${{ needs.prepare.outputs.last_tag }}"
+          echo "Latest nightly sha: ${{ needs.prepare.outputs.last_sha }}"
+          echo "Current source sha: ${{ needs.prepare.outputs.source_sha }}"
