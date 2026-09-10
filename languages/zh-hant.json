@@ -42,7 +42,7 @@
 		},
 		"contextMenu": {
 			"undo": "復原",
-			"redo": "重做",
+			"redo": "取消復原",
 			"cut": "剪下",
 			"copy": "複製",
 			"paste": "貼上",
@@ -66,10 +66,10 @@
 			"cannotDeletePoster": "如果資料夾位於壓縮檔內，則無法刪除，您必須使用 7-zip 或其它工具編輯。",
 			"setAsPoster": "設為封面",
 			"setAsPosterFolders": "設為其它資料夾的封面",
-			"posterSetSuccessfully": "封面已成功設置",
+			"posterSetSuccessfully": "圖片已設為封面",
 			"saveImage": "儲存圖片",
 			"saveAllImages": "儲存所有圖片",
-			"saveBookmarksImages": "儲存當前已加書籤的圖片",
+			"saveBookmarksImages": "儲存目前已加書籤的圖片",
 			"saveAllBookmarksImages": "儲存所有已加書籤的圖片",
 			"saveImagesMessage": "圖片已成功儲存",
 			"saveImageMessage": "圖片已成功儲存",
@@ -99,7 +99,7 @@
 		"reload": "重新載入",
 		"retry": "重試",
 		"search": "搜尋",
-		"filterCurrentPage": "篩選當前頁面",
+		"filterCurrentPage": "篩選目前頁面",
 		"pickAtRandom": "隨機挑選",
 		"language": "語言",
 		"settings": "設定",
@@ -115,7 +115,7 @@
 	},
 	"comics": {
 		"continueReading": "繼續閱讀",
-		"continueReadingNotExists": "繼續閱讀中的檔案已不存在",
+		"continueReadingNotExists": "繼續閱讀中儲存的檔案目前不存在",
 		"recentlyAdded": "最近新增",
 		"emptyIndex": "書庫裡還沒有漫畫。",
 		"emptyFolder": "此資料夾中沒有受支援的檔案。",
@@ -131,12 +131,12 @@
 		}
 	},
 	"reading": {
-		"prevChapter": "上一章",
+		"prevChapter": "前一章",
 		"firstPage": "第一頁",
-		"previous": "前一頁",
-		"next": "後一頁",
+		"previous": "往前",
+		"next": "往後",
 		"lastPage": "最後一頁",
-		"nextChapter": "下一章",
+		"nextChapter": "後一章",
 		"pages": {
 			"main": "頁面設定",
 			"pageLayout": "版面配置",
@@ -169,14 +169,14 @@
 			"decreaseHorizontalMargin": "減少水平邊距",
 			"doublePage": "雙頁顯示",
 			"doNotApplyToHorizontals": "不應用於橫構圖畫面",
-			"alignWithNextHorizontal": "與下一個水平對齊",
+			"alignWithNextHorizontal": "與後一個水平對齊",
 			"blankPage": "開頭空白頁",
 			"readingDelaySkip": "漫畫切換延遲",
 			"animationSpeed": "動畫速度",
 			"readingManga": "閱讀漫畫(倒序)",
 			"readingWebtoon": "閱讀網路漫畫(條漫)",
-			"readingGlobal": "全域預設",
-			"readingPresetNew": "新增預設",
+			"readingGlobal": "全域預設集",
+			"readingPresetNew": "新增預設集",
 			"clipHorizontal": "水平裁切",
 			"clipVertical": "垂直裁切",
 			"colors": "顏色",
@@ -190,15 +190,15 @@
 			"tone": "色調",
 			"colorize": "著色",
 			"onlyBlackAndWhite": "僅在黑白圖片中",
-			"colorPreset": "顏色預設",
+			"colorPreset": "顏色預設集",
 			"multiplier": "倍數",
-			"saveAsPreset": "保存為預設",
+			"saveAsPreset": "儲存為預設集",
 			"addColor": "新增顏色",
 			"fromImage": "從圖片中獲取",
-			"presets": "預設",
-			"savedPresets": "已保存的預設",
-			"multipleTonePresets": "多色調預設",
-			"oneTonePresets": "單色調預設",
+			"presets": "預設集",
+			"savedPresets": "已儲存的預設集",
+			"multipleTonePresets": "多色調預設集",
+			"oneTonePresets": "單色調預設集",
 			"integrated": "完整比例",
 			"ebookTheme": "電子書主題",
 			"fontSize": "字體大小",
@@ -290,8 +290,8 @@
 			"maxZoom": "最大縮放",
 			"panels": "分格",
 			"focusTo": {
-				"prevPanels": "聚焦於上一個分格",
-				"nextPanels": "聚焦於下一個分格"
+				"prevPanels": "聚焦於前一個面板",
+				"nextPanels": "聚焦於後一個面板"
 			},
 			"showFullPage": {
 				"beforeFirstPanel": "在第一個分格前顯示完整頁面",
@@ -303,8 +303,8 @@
 			"blur": "模糊",
 			"expandPanel": "展開分格",
 			"visibility": {
-				"prevPanels": "顯示上一個分格",
-				"nextPanels": "顯示下一個分格"
+				"prevPanels": "顯示前一個面板",
+				"nextPanels": "顯示後一個面板"
 			}
 		},
 		"moreOptions": {
@@ -327,9 +327,9 @@
 			"maxMargin": "最大水平和垂直邊距",
 			"globalZoom": "全局縮放而不是逐張圖片(垂直閱讀)",
 			"globalZoomSlide": "全局縮放而不是逐張圖片(水平閱讀)",
-			"moveZoomWithMouse": "隨滑鼠移動縮放(禁用拖曳移動)",
+			"moveZoomWithMouse": "使用游標移動縮放(停用拖曳移動)",
 			"scrollWithMouse": "當游標位於螢幕中央垂直移動時自動滾動 (停用拖放滾動)",
-			"goNextPrevChapterWithScroll": "以滑鼠滾動切換至下一章/上一章(垂直閱讀)",
+			"goNextPrevChapterWithScroll": "以滑鼠滾動切換至後一章/前一章(垂直閱讀)",
 			"turnPagesWithMouseWheel": "以滑鼠滾輪翻頁(僅按住 Ctrl 鍵時可縮放)",
 			"autodetectWebtoon": "自動偵測條漫",
 			"disableThumbnails": "停用縮圖 (顯示檔名)",
@@ -345,7 +345,7 @@
 		"imageInterpolation": {
 			"main": "圖片插值",
 			"interpolationMethod": "插值法",
-			"disabled": "禁用",
+			"disabled": "停用",
 			"downscaling": "縮小圖片",
 			"downscalingDescription": "此方法僅在需要降低圖片解析度時使用，不適用於 PDF 和 EPUB 或動態圖片。",
 			"upscaling": "放大圖片",
@@ -359,13 +359,13 @@
 		"colorProfile": {
 			"main": "顏色設定",
 			"force": "強制顏色設定",
-			"forceDescription": "強制 OpenComic 使用特定顏色設定檔案，而不是作業系統指定的窗口當前顯示器的顏色。這需要重新啟動應用程式。",
+			"forceDescription": "強制 OpenComic 使用特定的色彩描述檔，而不是依作業系統設定使用目前視窗所在螢幕的色彩描述檔。這需要重新啟動應用程式。",
 			"default": "預設"
 		},
 		"navigation": {
-			"main": "導航",
-			"folders": "導航(資料夾)",
-			"files": "導航(檔案)",
+			"main": "導覽",
+			"folders": "導覽（資料夾）",
+			"files": "導覽（檔案）",
 			"ignoreSingleFoldersLibrary": "忽略單一資料夾(自動打開)",
 			"ignoreFilesRegex": {
 				"title": "忽略與正規表達式或檔案模式匹配的檔案和資料夾",
@@ -383,9 +383,9 @@
 				"invalidRegex": "無效的正規表達式或檔案模式"
 			},
 			"openingBehaviorFolder": "打開資料夾時的行為",
-			"openingBehaviorFolderDescription": "設置導航時打開資料夾時所需的行為",
+			"openingBehaviorFolderDescription": "設置在導覽時開啟資料夾時的行為",
 			"openingBehaviorFile": "打開檔案時的行為",
-			"openingBehaviorFileDescription": "設置導航時打開檔案時所需的行為",
+			"openingBehaviorFileDescription": "設置在導覽時開啟檔案時的行為",
 			"openingBehavior": {
 				"fileList": "檔案列表",
 				"lastFolder": "最後一個資料夾",
@@ -401,12 +401,12 @@
 			"showFileExtension": "在檔案清單中顯示副檔名",
 			"openFilesInNewTab": "在新分頁開啟檔案 (僅適用於從 OpenComic 外部開啟的檔案)",
 			"openFilesInNewWindow": "在新視窗開啟檔案 (僅適用於從 OpenComic 外部開啟的檔案)",
-			"recentlyOpenedItems": "最近打開的項目保存數量"
+			"recentlyOpenedItems": "近期開啟項目的儲存數量"
 		},
 		"saveImages": {
-			"main": "保存圖片",
+			"main": "儲存圖片",
 			"filenameTemplate": "檔案名稱模板",
-			"filenameTemplateDescription": "這是保存圖片時使用的預設模板，如果已經存在同名圖片，則將使用增量數字編號。變數：",
+			"filenameTemplateDescription": "這是儲存圖片時使用的預設範本；如果已有同名圖片，將會在檔名後加上遞增的編號來儲存。<br>變數：",
 			"autoSave": "自動將圖片儲存至此資料夾"
 		},
 		"startupBehavior": {
@@ -453,7 +453,7 @@
 			"main": "快捷鍵",
 			"keyboard": "鍵盤",
 			"whenReading": "閱讀時",
-			"disableGamepadInput": "禁用遊戲手把輸入",
+			"disableGamepadInput": "停用遊戲手把輸入",
 			"contextMenu": "右鍵選單",
 			"gamepadMenu": "遊戲手把選單",
 			"useGamepad": "使用遊戲手把來改變動作",
@@ -474,7 +474,7 @@
 		},
 		"tapZones": {
 			"main": "點擊區域",
-			"disable": "禁用點擊區域",
+			"disable": "停用觸控區域",
 			"middleClickAutoScrollInAllTapZones": "在所有點擊區域內皆可使用滑鼠中鍵自動捲動（垂直閱讀）",
 			"middleClickAutoScrollInCenterTapZone": "僅在中央點擊區域內可使用滑鼠中鍵自動捲動（垂直閱讀）",
 			"invertInManga": "在閱讀漫畫時反轉點擊區域",
@@ -511,17 +511,17 @@
 			"cache": "快取",
 			"cacheDescription": "這裡儲存壓縮檔的縮圖和索引，除非它很大或出現相關錯誤，否則不建議清理",
 			"cacheMaxSize": "最大快取大小",
-			"cacheMaxSizeDescription": "當檔案超過此大小時，將從快取中刪除，優先刪除最舊的檔案",
+			"cacheMaxSizeDescription": "當快取超出此容量限制時，將被移除檔案，並優先移除較舊且未使用的檔案",
 			"cacheMaxOld": "快取最長保留時間",
-			"cacheMaxOldDescription": "超過此時間未使用的快取檔案將被刪除",
+			"cacheMaxOldDescription": "當檔案超過此時間未被使用時，將被從快取中移除",
 			"clearCache": "清除快取",
 			"temporaryFiles": "暫存檔案",
-			"temporaryFilesDescription": "在這裡，壓縮檔案會根據需要進行解壓縮，這些檔案會在關閉 OpenComic 時自動刪除",
-			"removeTemporaryFiles": "刪除暫存檔案",
+			"temporaryFilesDescription": "壓縮檔案會在有需要時於此進行解壓縮，關閉 OpenComic 時會移除部分檔案",
+			"removeTemporaryFiles": "移除暫存檔案",
 			"temporaryFilesMaxSize": "最大暫存檔案大小",
-			"temporaryFilesMaxSizeDescription": "當暫存檔案超過此大小時將被刪除，優先刪除較舊且未使用的檔案",
+			"temporaryFilesMaxSizeDescription": "當暫存檔案超出此容量限制時將被移除，並優先移除較舊且未使用的檔案",
 			"temporaryFilesMaxOld": "暫存檔案最長保留時間",
-			"temporaryFilesMaxOldDescription": "超過此時間未使用的暫存檔案將被刪除"
+			"temporaryFilesMaxOldDescription": "當暫存檔案超過此時間未被使用時將被移除"
 		}
 	},
 	"menu": {
@@ -587,14 +587,14 @@
 			"wantToTrack": "您是否要追蹤？"
 		},
 		"pages": {
-			"readingPresetNewHeader": "建立新預設",
-			"readingPresetEditHeader": "編輯預設",
-			"readingPresetName": "預設名稱",
-			"readingPresetRemoveHeader": "刪除預設",
-			"readingPresetRemove": "您確定要刪除此預設嗎？",
-			"readingPresetApplyToLabels": "將此預設自動套用於具有這些標籤的資料夾/檔案",
-			"readingPresetApplyToAllLabel": "將此預設套用於具有此標籤的資料夾/檔案",
-			"readingPresetApplyToAllLabelDescription": "這會強制將此預設套用到所有帶有該標籤的資料夾/檔案，即使該預設手動修改過也是如此",
+			"readingPresetNewHeader": "建立新預設集",
+			"readingPresetEditHeader": "編輯預設集",
+			"readingPresetName": "預設集名稱",
+			"readingPresetRemoveHeader": "移除預設集",
+			"readingPresetRemove": "您確定要移除此預設集嗎？",
+			"readingPresetApplyToLabels": "自動將此預設集套用至具有這些標籤的資料夾/檔案",
+			"readingPresetApplyToAllLabel": "將此預設集套用至具有這些標籤的資料夾/檔案",
+			"readingPresetApplyToAllLabelDescription": "即使手動修改過此預設集，也會強制將其套用至所有具有該標籤的資料夾/檔案",
 			"readingNumColorsGenerate": "要產生的顏色數量",
 			"readingGotoPage": "轉到頁面"
 		},
@@ -611,9 +611,9 @@
 			"delete": "刪除目錄",
 			"confirmDelete": "您確定要刪除此目錄嗎？",
 			"downloadAuto": "自動從 OPDS 目錄下載檔案",
-			"showOnLeft": "在導航欄顯示",
+			"showOnLeft": "顯示在導覽選單",
 			"downloadTitle": "OPDS 資料夾",
-			"downloadDescription": "通過 OPDS 下載的檔案保存資料夾",
+			"downloadDescription": "通過 OPDS 下載的檔案儲存資料夾",
 			"autoSave": "自動儲存檔案到此資料夾",
 			"downloadSuccess": "檔案已成功下載"
 		},
@@ -705,7 +705,7 @@
 		"undo": "復原",
 		"dismiss": "忽略",
 		"delete": "刪除",
-		"remove": "刪除",
+		"remove": "移除",
 		"download": "下載",
 		"buy": "購買",
 		"sample": "試讀",
