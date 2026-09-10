@@ -295,7 +295,7 @@ async function track(toTrack)
 		if(toTrack.volumesInt && toTrack.volumesInt > userVolumes)
 			volumes = toTrack.volumesInt;
 
-		if((totals.chapters && toTrack.chaptersInt && toTrack.chaptersInt >= totals.chapters) || (totals.volumes && toTrack.volumesInt && toTrack.volumesInt >= totals.volumes))
+		if(series.status === 'completed' && ((totals.chapters && toTrack.chaptersInt && toTrack.chaptersInt >= totals.chapters) || (totals.volumes && toTrack.volumesInt && toTrack.volumesInt >= totals.volumes)))
 			state = 'completed';
 		else if(!userState || userState === 'plan_to_read' || userState === 'considering' || userState === 'paused')
 			state = 'reading';

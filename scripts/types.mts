@@ -76,7 +76,7 @@ export interface File {
 }
 
 export interface Image extends File {
-	canvas: boolean;
+	pdf: boolean;
 	ebook: boolean;
 	image: string;
 	size?: {

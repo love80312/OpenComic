@@ -64,22 +64,36 @@ function logout()
 
 var times = {}, currentTime = {}, cache = {};
 
-function getState(data)
+async function getState(data)
 {
-	const chapter = data.chapter = data.chapter ?? tracking.getChapterImage(true);
-	const volume = data.volume = data.volume ?? tracking.getVolumeImage(true);
+	const states = [];
 
-	let state = (chapter !== false ? language.reading.tracking.chapter+' '+chapter : '')+(volume !== false ? (chapter !== false ? ' · ' : '')+language.reading.tracking.volume+' '+volume : '');
+	if(reading.isEbook() || reading.isPdf())
+	{
+		const currentToc = await reading.currentToc();
+
+		if(currentToc.name)
+			states.push(currentToc.name);
+	}
+
+	if(!states.length)
+	{
+		const chapter = data.chapter = data.chapter ?? tracking.getChapterImage(true);
+		const volume = data.volume = data.volume ?? tracking.getVolumeImage(true);
+
+		if(chapter !== false)
+			states.push(language.reading.tracking.chapter+' '+chapter);
+
+		if(volume !== false)
+			states.push(language.reading.tracking.volume+' '+volume);
+	}
 
 	const percent = Math.round((reading.currentPage() - 1) / (reading.totalPages() - 1) * 100);
 	const pages = language.global.pageAndNumber.replace(/\$1/, reading.currentPage()+' / '+reading.totalPages());
 
-	if(!state)
-		state = pages+' · '+percent+'%';
-	else
-		state += ' · '+pages+' · '+percent+'%';
+	states.push(pages, percent+'%');
 
-	return state;
+	return states.join(' · ');
 }
 
 var status = false;
@@ -106,7 +120,7 @@ async function update(focused = true)
 	const data = cache[path] ?? {};
 
 	const title = data.title = data.title ?? (onReading ? tracking.getTitle(true) : language.global.library);
-	const state = onReading ? getState(data)+'  ' : '  ';
+	const state = onReading ? (await getState(data))+'  ' : '  ';
 
 	if(focused)
 	{

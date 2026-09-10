@@ -1677,7 +1677,7 @@ function change(section, action, current, shortcut)
 	if(!current && shortcut)
 		saved.shortcuts[shortcut] = action;
 
-	storage.setVar('shortcuts', section, saved);
+	storage.setKey('shortcuts', section, saved);
 	loadShortcuts();
 }
 
@@ -1707,7 +1707,7 @@ function changeGamepad(section, action, current, button)
 	if(!current && button)
 		saved.gamepad[button] = action;
 
-	storage.setVar('shortcuts', section, saved);
+	storage.setKey('shortcuts', section, saved);
 	loadShortcuts();
 }
 
@@ -1718,7 +1718,7 @@ function changeTapZone(section, vertical, horizontal, button, action)
 	saved.tapZones = shortcuts[section].tapZones;
 	saved.tapZones[vertical][horizontal][button] = action;
 
-	storage.setVar('shortcuts', section, saved);
+	storage.setKey('shortcuts', section, saved);
 	loadShortcuts();
 }
 

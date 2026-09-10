@@ -68,7 +68,7 @@ function save(path = false, mainPath = false, hasKnownChildren = false)
 
 	const percent = (totalPages === 1) ? 0 : (((currentPage - 1) / (totalPages - 1)) * 100);
 
-	storage.updateVar('readingProgress', relative.path(mainPath), {
+	storage.setKey('readingProgress', relative.path(mainPath), {
 		index: currentPage,
 		path: relative.path(path.replace(/\?page=[0-9]+$/, '')),
 		lastReading: Date.now(),

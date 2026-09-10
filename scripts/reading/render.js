@@ -3,9 +3,9 @@ const ai = require(p.join(appDir, '.dist/reading/render/ai.js'));
 var file = false,
 	ebook = false,
 	ebookConfigChanged = false,
-	renderType = 'canvas',
+	renderType = 'pdf',
 	renderImages = false,	
-	renderCanvas = false,
+	renderPdf = false,
 	renderEbook = false,	
 	imagesData = {},
 	rendering = {},
@@ -19,7 +19,7 @@ var file = false,
 	globalZoom = false,
 	doublePage = false;
 
-async function setFile(_file, _scaleMagnifyingGlass = false, _renderType = 'canvas')
+async function setFile(_file, _scaleMagnifyingGlass = false, _renderType = 'pdf')
 {
 	if(file) file.destroy();
 
@@ -28,7 +28,7 @@ async function setFile(_file, _scaleMagnifyingGlass = false, _renderType = 'canv
 	renderType = _renderType;
 
 	renderImages = (renderType == 'images') ? true : false;
-	renderCanvas = (renderType == 'canvas') ? true : false;
+	renderPdf = (renderType == 'pdf') ? true : false;
 	renderEbook = (renderType == 'ebook') ? true : false;
 
 	file = _file;
@@ -442,7 +442,7 @@ async function render(index, _scale = false, magnifyingGlass = false, threadsId 
 				ebook.applyConfigToHtml(iframeMG.contentDocument, page.chapter);
 			}
 		}
-		else if(renderImages || renderCanvas)
+		else if(renderImages || renderPdf)
 		{
 			let cssMethods = {
 				'pixelated': 'pixelated',
@@ -550,7 +550,7 @@ async function render(index, _scale = false, magnifyingGlass = false, threadsId 
 			// Remove prev rendered blobRendered and blobRender classes to avoid pixelated intermediate images
 			img.classList.remove('blobRendered', 'blobRender');
 
-			if(renderCanvas)
+			if(renderPdf)
 			{
 				if(_config.width > config.renderMaxWidth)
 					_config.width = config.renderMaxWidth;
@@ -693,7 +693,7 @@ async function render(index, _scale = false, magnifyingGlass = false, threadsId 
 					});
 				}
 
-				onRender.callback();
+				if(onRender?.callback) onRender.callback();
 				onRender = false;
 			}
 		}

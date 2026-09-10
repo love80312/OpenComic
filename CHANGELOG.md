@@ -51,6 +51,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Add support for Bangumi tracking site integration [`4ec4550`](https://github.com/ollm/OpenComic/commit/4ec4550d8d919ec09294bcf76b118e92d7dbb220)
 - Option to keep big halftones [`ca4f66a`](https://github.com/ollm/OpenComic/commit/ca4f66ad94225b3eaa24474a03e0abc5b368731f)
 - Setting to use the first image as the poster for parent folders [`850ec8b`](https://github.com/ollm/OpenComic/commit/850ec8b83647402d98ea8075e7a020f0bdbcd397)
+- Migrate from `epubjs` to `foliatejs` and update related functionalities [`074de24`](https://github.com/ollm/OpenComic/commit/074de2422c8ff56c4a5eb7bb0e4f25bf1b916afb)
+- Support for `MOBI`, `AZW`, `AZW3` and `FB2` formats
+
 
 ##### 🐛 Bug Fixes
 
@@ -67,6 +70,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Align with next horizontal` conflicts with `Blank page at the beginning` [`0af09be`](https://github.com/ollm/OpenComic/commit/0af09be7501ad550c261faa24e5bbe8588465005)
 - Support searching for NSFW manga on MyAnimeList [`b59fdfe`](https://github.com/ollm/OpenComic/commit/b59fdfe337836584080b5d65cc6e58e3a53fbd1e)
 - Some errors saving progress [`ebe4285`](https://github.com/ollm/OpenComic/commit/ebe4285501b5df151f519c964bdabf66b10e6094)
+- Zoom calculation on window resize [`142574c`](https://github.com/ollm/OpenComic/commit/142574c7fb92fc97903e0ed4e10ac09d65c33fa6)
 
 ## [v1.6.5](https://github.com/ollm/OpenComic/releases/tag/v1.6.5) (31-10-2025)
 

@@ -101,16 +101,16 @@ function changeHeaderButtons(scrollInStart = null, scrollInEnd = null)
 }
 
 //Go to a specific comic image (Left menu)
-function goToImageCL(index, animation = true, fromScroll = false, fromPageRange = false)
+function goToImageCL(index, animation = true, fromScroll = false, onlyMoveScroll = false)
 {
 	if(!onReading) return;
 
-	if(!fromPageRange)
+	if(!onlyMoveScroll)
 	{
 		render.focusIndex(index, doublePage.active());
 		filters.focusIndex(index);
 		music.focusIndex();
-		panels.focusPage(index, fromScroll); // Use idnex as page
+		panels.focusPage(index, fromScroll); // Use index as page
 		shortcuts.calcEventFromPoint(false);
 	}
 
@@ -200,7 +200,7 @@ function goToImageCL(index, animation = true, fromScroll = false, fromPageRange 
 		sidebar.disableEvent(animationDurationMS + 50);
 	}
 
-	if(!fromPageRange)
+	if(!onlyMoveScroll)
 	{
 		let input = contentLeft.querySelector('.simple-slider input');
 		if(input) events.goRange(input, index, false);
@@ -219,7 +219,7 @@ function goToImageCL(index, animation = true, fromScroll = false, fromPageRange 
 	sidebar.goToImage(index);
 
 	// Change header buttons
-	if(!fromPageRange && (!readingViewIs('scroll') || !fromScroll))
+	if(!onlyMoveScroll && (!readingViewIs('scroll') || !fromScroll))
 		changeHeaderButtons();
 }
 
@@ -272,22 +272,12 @@ function goToPage(page, disableSave = false)
 	goToImageCL(page, true)
 }
 
-function goToEbookId(id, href)
+async function goToEbookId({id, href, kindle} = {})
 {
-	const hrefPage = _ebook.hrefPage;
+	const page = await _ebook.getPage({id, href, kindle});
 
-	if(hrefPage[href])
-		return goToPage(hrefPage[href]);
-
-	const chaptersIdPage = _ebook.chaptersIdPage;
-
-	for(const index in chaptersIdPage)
-	{
-		const ids = chaptersIdPage[index];
-
-		if(ids[id])
-			return goToPage(ids[id]);
-	}
+	if(page)
+		return goToPage(page);
 }
 
 var pageRangeHistory = [];
@@ -650,7 +640,7 @@ function goToChapterProgress(chapterIndex, chapterProgress, animation = true)
 
 	if(closest.page)
 	{
-		let index = closest.page.index + 1;
+		let index = closest.page.index;
 
 		if(doublePage.active())
 			index = Math.ceil(index / 2);
@@ -1563,36 +1553,40 @@ function applyDiffScrolls(diff = 0)
 
 function zoomScrollHeight()
 {
-	if(scalePrevData.scale != 1 && config.readingGlobalZoom && readingViewIs('scroll'))
+	if(scalePrevData.scale != 1)
 	{
-		let contentRight = template._contentRight();
-		let readingBody = contentRight.querySelector('.reading-body');
-		let readingBodyChild = readingBody.firstElementChild;
+		const globalZoomScroll = config.readingGlobalZoom && readingViewIs('scroll');
 
-		let content = contentRight.firstElementChild;
+		const contentRight = template._contentRight();
+		const readingBody = contentRight.querySelector('.reading-body');
 
-		let newRect = readingBody.getBoundingClientRect();
-		let childRect = readingBodyChild.getBoundingClientRect();
+		const content = contentRight.firstElementChild;
+
+		const newRect = reading.view.rightSize;
 		originalRectReadingBody = content.getBoundingClientRect();
 
-		let diff = childRect.height / originalRect2.height;
+		const isScroll = readingViewIs('scroll')
+		const height = isScroll ? newRect.scrollHeight : newRect.height;
 
 		originalRect = {
-			width: diff * originalRect.width,
-			height: diff * originalRect.height,
+			width: newRect.width,
+			height: globalZoomScroll ? height / scalePrevData.scale : height,
 			left: newRect.left,
 			top: newRect.top,
 		};
 
 		originalRect2 = {
 			width: originalRect.width,
-			height: childRect.height,
+			height: height,
 			left: newRect.left,
 			top: newRect.top,
 		};
 
-		if(!readingBody.classList.contains('zooming'))
+		if(!readingBody.classList.contains('zooming') && globalZoomScroll)
 		{
+			const readingBodyChild = readingBody.firstElementChild;
+			const childRect = readingBodyChild.getBoundingClientRect();
+
 			dom.this(contentRight).find('.reading-body').css({
 				height: childRect.height+'px',
 			});
@@ -2095,7 +2089,7 @@ function activeMagnifyingGlass(active = null, gamepad = false, fromSwitch = fals
 
 	if(active)
 	{
-		storage.updateVar('config', 'readingMagnifyingGlass', true);
+		storage.setKey('config', 'readingMagnifyingGlass', true);
 		render.setMagnifyingGlassStatus(config.readingMagnifyingGlassZoom, doublePage.active());
 
 		if(gamepad)
@@ -2115,7 +2109,7 @@ function activeMagnifyingGlass(active = null, gamepad = false, fromSwitch = fals
 	}
 	else
 	{
-		storage.updateVar('config', 'readingMagnifyingGlass', false);
+		storage.setKey('config', 'readingMagnifyingGlass', false);
 		magnifyingGlassControl(0);
 		render.setMagnifyingGlassStatus(false);
 	}
@@ -2134,7 +2128,7 @@ function changeMagnifyingGlass(mode, value, save)
 	{
 		magnifyingGlassControl(1, {pageX: pageX, pageY: pageY, originalEvent: {touches: false}}, {zoom: value});
 
-		if(save) storage.updateVar('config', 'readingMagnifyingGlassZoom', value);
+		if(save) storage.setKey('config', 'readingMagnifyingGlassZoom', value);
 
 		render.setScaleMagnifyingGlass(value, doublePage.active());
 	}
@@ -2142,19 +2136,19 @@ function changeMagnifyingGlass(mode, value, save)
 	{
 		magnifyingGlassControl(1, {pageX: pageX, pageY: pageY, originalEvent: {touches: false}}, {size: value});
 
-		if(save) storage.updateVar('config', 'readingMagnifyingGlassSize', value);
+		if(save) storage.setKey('config', 'readingMagnifyingGlassSize', value);
 	}
 	else if(mode == 3) //Set the ratio
 	{
 		magnifyingGlassControl(1, {pageX: pageX, pageY: pageY, originalEvent: {touches: false}}, {ratio: value});
 
-		if(save) storage.updateVar('config', 'readingMagnifyingGlassRatio', value);
+		if(save) storage.setKey('config', 'readingMagnifyingGlassRatio', value);
 	}
 	else if(mode == 4) //Set the radius
 	{
 		magnifyingGlassControl(1, {pageX: pageX, pageY: pageY, originalEvent: {touches: false}}, {radius: value});
 
-		if(save) storage.updateVar('config', 'readingMagnifyingGlassRadius', value);
+		if(save) storage.setKey('config', 'readingMagnifyingGlassRadius', value);
 	}
 }
 
@@ -2251,9 +2245,22 @@ function magnifyingGlassControl(mode, event = false, lensData = false)
 	//view.calculateView();
 }
 
-async function resized()
+let resizeAfterLoad = false;
+
+function resized()
 {
-	if(onLoadPromise) await onLoadPromise.promise;
+    if(onLoadPromise)
+    {
+        if(resizeAfterLoad)
+            return;
+
+        resizeAfterLoad = onLoadPromise.promise.then(function(){
+            resizeAfterLoad = false;
+            resized();
+        });
+
+        return;
+    }
 
 	originalRect = false;
 	originalRectReadingBody = false;
@@ -2262,14 +2269,14 @@ async function resized()
 	contentLeftRect = false;
 	contentRightRect = false;
 	barHeaderRect = false;
-	
+
 	if((onReading || _onReading) && isLoaded)
 	{
 		if(!readingIsEbook)
 		{
 			view.disposeImages();
-			zoomScrollHeight();
 			view.calculateView();
+			zoomScrollHeight();
 			view.stayInLine.recalculate(true);
 		}
 
@@ -2410,6 +2417,8 @@ function hideContent(fullScreen = false, first = false)
 
 	}, 10);
 
+	const changed = (hiddenContentLeft != _hideContentLeft || hiddenBarHeader != _hideBarHeader || hiddenTabsBar != _hideTabsBar);
+
 	const app = document.querySelector('.app');
 
 	if(_hideContentLeft)
@@ -2449,7 +2458,7 @@ function hideContent(fullScreen = false, first = false)
 	showHideHeader();
 	dom.this(template._contentRight()).find('.reading-progress').class(fullScreen ? config.readingShowPageNumberFullScreen : config.readingShowPageNumber, 'active');
 
-	if(!first && onReading)
+	if(changed && !first && onReading)
 		resized();
 }
 
@@ -2460,9 +2469,9 @@ function hideBarHeader(value = null)
 	dom.query('.menu-simple-hide-tabs-bar').class((!value && !isFullScreen), 'disable-pointer');
 
 	if(isFullScreen)
-		storage.updateVar('config', 'readingHideBarHeaderFullScreen', value);
+		storage.setKey('config', 'readingHideBarHeaderFullScreen', value);
 	else
-		storage.updateVar('config', 'readingHideBarHeader', value);
+		storage.setKey('config', 'readingHideBarHeader', value);
 
 	hideContent(isFullScreen);
 }
@@ -2472,9 +2481,9 @@ function hideTabsBar(value = null)
 	if(value === null) value = !(isFullScreen ? config.readingHideTabsBarFullScreen : config.readingHideTabsBar);
 
 	if(isFullScreen)
-		storage.updateVar('config', 'readingHideTabsBarFullScreen', value);
+		storage.setKey('config', 'readingHideTabsBarFullScreen', value);
 	else
-		storage.updateVar('config', 'readingHideTabsBar', value);
+		storage.setKey('config', 'readingHideTabsBar', value);
 
 	hideContent(isFullScreen);
 }
@@ -2484,9 +2493,9 @@ function hideContentLeft(value = null)
 	if(value === null) value = !(isFullScreen ? config.readingHideContentLeftFullScreen : config.readingHideContentLeft);
 
 	if(isFullScreen)
-		storage.updateVar('config', 'readingHideContentLeftFullScreen', value);
+		storage.setKey('config', 'readingHideContentLeftFullScreen', value);
 	else
-		storage.updateVar('config', 'readingHideContentLeft', value);
+		storage.setKey('config', 'readingHideContentLeft', value);
 
 	hideContent(isFullScreen);
 }
@@ -2496,9 +2505,9 @@ function showPageNumber(value = null)
 	if(value === null) value = !(isFullScreen ? config.readingShowPageNumberFullScreen : config.readingShowPageNumber);
 
 	if(isFullScreen)
-		storage.updateVar('config', 'readingShowPageNumberFullScreen', value);
+		storage.setKey('config', 'readingShowPageNumberFullScreen', value);
 	else
-		storage.updateVar('config', 'readingShowPageNumber', value);
+		storage.setKey('config', 'readingShowPageNumber', value);
 
 	hideContent(isFullScreen);
 }
@@ -2587,7 +2596,7 @@ function updateReadingPagesConfig(key, value)
 		readingPagesConfig.configKey = false;
 		readingPagesConfig[key] = value;
 
-		storage.updateVar('readingPagesConfig', dom.history.mainPath, readingPagesConfig);
+		storage.setKey('readingPagesConfig', dom.history.mainPath, readingPagesConfig);
 	}
 	else if(currentReadingConfigKey > 0)
 	{
@@ -2597,12 +2606,12 @@ function updateReadingPagesConfig(key, value)
 		{		
 			readingShortcutPagesConfig[key] = value;
 
-			storage.updateVar('readingShortcutPagesConfig', currentReadingConfigKey, readingShortcutPagesConfig);
+			storage.setKey('readingShortcutPagesConfig', currentReadingConfigKey, readingShortcutPagesConfig);
 		}
 	}
 	else if(currentReadingConfigKey == 0)
 	{
-		storage.updateVar('config', key, value);
+		storage.setKey('config', key, value);
 	}
 }
 
@@ -2889,7 +2898,7 @@ function reloadAnimated(full = false, imageIndex = false)
 		if(readingIsEbook) handlebarsContext.loading = true;
 		template.loadContentRight('reading.content.right.html', true);
 
-		reading.reload(false, imageIndex);
+		reading.reload(full, imageIndex);
 
 	}, 10, 20);
 }
@@ -2900,11 +2909,11 @@ function reload(full = false, imageIndex = false)
 
 	if(full)
 	{
-		dom.openComic(true, (imagesData[imageIndex]?.path || dom.history.path), dom.history.mainPath, false, false, false, true);
+		dom.openComic(true, (imagesData[imageIndex]?.path || dom.history.path), dom.history.mainPath, false, false, true);
 	}
 	else
 	{
-		read(readingCurrentPath, imageIndex, false, readingIsCanvas, readingIsEbook);
+		read(readingCurrentPath, imageIndex, false, readingIsPdf, readingIsEbook);
 	}
 }
 
@@ -3098,7 +3107,7 @@ function createAndDeleteBookmark(index = false, force = null)
 			activeBookmark(true);
 		}
 
-		storage.updateVar('bookmarks', relative.path(dom.history.mainPath), bookmarks);
+		storage.setKey('bookmarks', relative.path(dom.history.mainPath), bookmarks);
 	}
 }
 
@@ -3106,7 +3115,7 @@ function deleteBookmark(key)
 {
 	const bookmarks = getBookmarks();
 	bookmarks.splice(key, 1);
-	storage.updateVar('bookmarks', relative.path(dom.history.mainPath), bookmarks);
+	storage.setKey('bookmarks', relative.path(dom.history.mainPath), bookmarks);
 
 	loadBookmarks(true);
 }
@@ -3235,7 +3244,7 @@ function loadBookmarks(bookmarksChild = false)
 
 	handlebarsContext.bookmarks = _bookmarks;
 	handlebarsContext.bookmarksChild = bookmarksChild;
-	handlebarsContext.bookmarksSaveImages = (reading.isCanvas() || reading.isEbook()) ? false : true;
+	handlebarsContext.bookmarksSaveImages = (reading.isPdf() || reading.isEbook()) ? false : true;
 
 	dom.query(!bookmarksChild ? '#collections-bookmark .menu-simple' : '#collections-bookmark .menu-simple > div').html(template.load('reading.elements.menus.collections.bookmarks.html'));
 }
@@ -3398,7 +3407,7 @@ function purgeGlobalReadingPagesConfig()
 			const labelConfigKey = getLabelConfigKey();
 
 			if(labelConfigKey === 0)
-				storage.deleteVar('readingPagesConfig', path);
+				storage.deleteKey('readingPagesConfig', path);
 		}
 	}
 }
@@ -3443,9 +3452,9 @@ function setReadingShortcutPagesConfig(key = 0, desactiveMenu = true)
 		const labelConfigKey = getLabelConfigKey();
 
 		if(labelConfigKey)
-			storage.updateVar('readingPagesConfig', dom.history.mainPath, {configKey: 0});
+			storage.setKey('readingPagesConfig', dom.history.mainPath, {configKey: 0});
 		else
-			storage.deleteVar('readingPagesConfig', dom.history.mainPath);
+			storage.deleteKey('readingPagesConfig', dom.history.mainPath);
 	}
 	else
 	{
@@ -3454,7 +3463,7 @@ function setReadingShortcutPagesConfig(key = 0, desactiveMenu = true)
 		if(!readingPagesConfig) readingPagesConfig = {};
 		readingPagesConfig.configKey = key;
 
-		storage.updateVar('readingPagesConfig', dom.history.mainPath, readingPagesConfig);
+		storage.setKey('readingPagesConfig', dom.history.mainPath, readingPagesConfig);
 	}
 
 	changePagesView(0);
@@ -3503,7 +3512,7 @@ function editReadingShortcutPagesConfigName(key = 0, save = false)
 		{
 			if(key === 0)
 			{
-				storage.updateVar('config', 'readingPresetName', name);
+				storage.setKey('config', 'readingPresetName', name);
 			}
 			else
 			{			
@@ -3513,7 +3522,7 @@ function editReadingShortcutPagesConfigName(key = 0, save = false)
 				{			
 					readingShortcutPagesConfig['readingPresetName'] = name;
 
-					storage.updateVar('readingShortcutPagesConfig', key, readingShortcutPagesConfig);
+					storage.setKey('readingShortcutPagesConfig', key, readingShortcutPagesConfig);
 
 				}
 			}
@@ -3599,7 +3608,7 @@ function newReadingShortcutPagesConfig(save = false)
 				labels: [],
 			};
 
-			storage.update('readingShortcutPagesConfig', readingShortcutPagesConfig);
+			storage.set('readingShortcutPagesConfig', readingShortcutPagesConfig);
 
 			reading.setReadingShortcutPagesConfig(newKey, false);
 
@@ -3641,7 +3650,7 @@ function removeReadingShortcutPagesConfig(key, confirm = false)
 
 		delete readingShortcutPagesConfig[key];
 
-		storage.update('readingShortcutPagesConfig', readingShortcutPagesConfig);
+		storage.set('readingShortcutPagesConfig', readingShortcutPagesConfig);
 
 		// Remove from comic config
 		var readingPagesConfig = storage.get('readingPagesConfig');
@@ -3652,7 +3661,7 @@ function removeReadingShortcutPagesConfig(key, confirm = false)
 				delete readingPagesConfig[path];
 		}
 
-		storage.update('readingShortcutPagesConfig', readingShortcutPagesConfig);
+		storage.set('readingShortcutPagesConfig', readingShortcutPagesConfig);
 		purgeGlobalReadingPagesConfig();
 
 		// Reload
@@ -3708,7 +3717,7 @@ function trackingSiteToFavorite(site = '')
 
 		configSites[site] = siteData.config;
 
-		storage.updateVar('config', 'trackingSites', configSites);
+		storage.setKey('config', 'trackingSites', configSites);
 
 		loadTrackigSites()
 	}
@@ -4095,7 +4104,7 @@ async function generateEbookPages(end = false, reset = false, fast = false, imag
 			const width = chapter.fixedLayout ? chapter.width : ebookConfig.width;
 			const height = chapter.fixedLayout ? chapter.height : ebookConfig.height;
 
-			imagesData[index] = Object.assign(page, {path, index, width, height, aspectRatio: (width / height), name: page.name, fixedLayout: chapter.fixedLayout, canvas: false, ebook: true, folder: false});
+			imagesData[index] = Object.assign(page, {path, index, width, height, aspectRatio: (width / height), name: page.name, fixedLayout: chapter.fixedLayout, pdf: false, ebook: true, folder: false});
 			items.push(imagesData[index]);
 
 			comics.push({
@@ -4106,7 +4115,7 @@ async function generateEbookPages(end = false, reset = false, fast = false, imag
 				path: path,
 				mainPath: '', // mainPath,
 				size: false,
-				canvas: false,
+				pdf: false,
 				ebook: true,
 				folder: false,
 			});
@@ -4190,6 +4199,38 @@ function currentImagePage()
 function currentImageIndex()
 {
 	return currentImagePage() - 1;
+}
+
+function flattenToc(items)
+{
+	if(!Array.isArray(items))
+		return [];
+
+	return items.flatMap(({subitems, ...item}) => [
+		item,
+		...flattenToc(subitems)
+	]);
+}
+
+async function currentToc(index = false)
+{
+	index = index || currentImagePage();
+	let closest = {page: -1};
+
+	if(!readingIsEbook && !readingIsPdf) return closest;
+
+	let toc = readingIsEbook ? _ebook?.toc : (readingFileC ? await readingFileC.readPdfToc() : false);
+	if(!toc || !toc.length) return closest;
+
+	toc = flattenToc(toc);
+	
+	for(let i = 0, len = toc.length; i < len; i++)
+	{
+		if(toc[i].page <= index && toc[i].page > closest.page)
+			closest = toc[i];
+	}
+
+	return closest;
 }
 
 function applyMoveZoomWithMouse(pageX = false, pageY = false)
@@ -4423,7 +4464,7 @@ function pointermove(event)
 					hideWindowButtons(false, true);
 
 					const tabsBar = document.querySelector('.tabs-bar');
-					tabsBar.style.webkitAppRegion = 'drag';
+					tabsBar.style.webkitAppRegion = 'none';
 
 					setTimeout(function() {
 
@@ -4659,11 +4700,25 @@ function _mouseleave()
 	isMouseenter.document = false;
 }
 
-var touchTimeout, mouseleave = {lens: false, body: false, window: false}, isMouseenter = {document: true}, touchStart = false, magnifyingGlassOffset = false, readingCurrentPath = false, zoomMoveData = {}, magnifyingGlassScroll = {scrollTop: false, time: 0}, readingDragScroll = false, gamepadScroll = false, readingIsCanvas = false, readingIsEbook = false, readingFile = false, readingFileC = false, gamepadAxesNow = 0, scrollInStart = false, scrollInEnd = false, trackingCurrent = false;
+let initialized = false;
+
+function init()
+{
+	if(initialized)
+		return;
+
+	initialized = true;
+
+	app.event(window, 'resize', resized);
+}
+
+var touchTimeout, mouseleave = {lens: false, body: false, window: false}, isMouseenter = {document: true}, touchStart = false, magnifyingGlassOffset = false, readingCurrentPath = false, zoomMoveData = {}, magnifyingGlassScroll = {scrollTop: false, time: 0}, readingDragScroll = false, gamepadScroll = false, readingIsPdf = false, readingIsEbook = false, readingFile = false, readingFileC = false, gamepadAxesNow = 0, scrollInStart = false, scrollInEnd = false, trackingCurrent = false;
 
 //It starts with the reading of a comic, events, argar images, counting images ...
-async function read(path, index = 1, end = false, isCanvas = false, isEbook = false, imagePath = false)
+async function read(path, index = 1, end = false, isPdf = false, isEbook = false, imagePath = false)
 {
+	init();
+
 	let contentRightIndex = template.contentRightIndex();
 
 	items = [], imagesData = {}, imagesDataClip = {}, imagesPath = {}, imagesNum = 0, contentNum = 0, imagesNumLoad = 0, currentIndex = index, currentScale = 1, currentZoomIndex = false, scalePrevData = {tranX: 0, tranX2: 0, tranY: 0, tranY2: 0, scale: 1, scrollTop: 0}, originalRect = false, scrollInStart = false, scrollInEnd = false, prevChangeHeaderButtons = {}, trackingCurrent = false, pageRangeHistory = [], showComicSkip = false, ebookHasSelection = false;
@@ -4697,7 +4752,7 @@ async function read(path, index = 1, end = false, isCanvas = false, isEbook = fa
 	let promise = new Promise(function(_resolve){
 		resolve = _resolve;
 	});
-	onLoadPromise = {promise: promise, resolve: resolve};
+	onLoadPromise = {promise: promise, resolve: resolve, waitResize: false};
 
 	const contentRight = template._contentRight();
 	const readingLens = contentRight.querySelector('.reading-lens');
@@ -5215,8 +5270,6 @@ async function read(path, index = 1, end = false, isCanvas = false, isEbook = fa
 
 	})
 
-	app.event(window, 'resize', resized);
-
 	$(window).on('mousewheel touchstart', function(e) {
 
 		if(!zoomingIn)
@@ -5238,7 +5291,7 @@ async function read(path, index = 1, end = false, isCanvas = false, isEbook = fa
 			imagesNum++;
 	}
 
-	readingIsCanvas = isCanvas;
+	readingIsPdf = isPdf;
 	readingIsEbook = isEbook;
 
 	if(readingFile) readingFile.destroy();
@@ -5254,7 +5307,7 @@ async function read(path, index = 1, end = false, isCanvas = false, isEbook = fa
 		dom.this(contentRight).find('.loading').remove();
 		dom.this(contentRight).find('.reading-body').css({opacity: 1});
 
-		if(!isCanvas && !isEbook)
+		if(!isPdf && !isEbook)
 		{
 			setTimeout(function(){
 				view.getAllSizes(template.contentRightIndex());
@@ -5263,10 +5316,10 @@ async function read(path, index = 1, end = false, isCanvas = false, isEbook = fa
 
 	});
 
-	if(isCanvas)
+	if(isPdf)
 	{
 		readingFileC = fileManager.fileCompressed(path);
-		await render.setFile(readingFileC, (config.readingMagnifyingGlass ? config.readingMagnifyingGlassZoom : false));
+		await render.setFile(readingFileC, (config.readingMagnifyingGlass ? config.readingMagnifyingGlassZoom : false), 'pdf');
 
 		// Avoid continue if another comic has been opened
 		if(contentRightIndex != template.contentRightIndex())
@@ -5423,6 +5476,7 @@ module.exports = {
 	scalePrevData: function(){return scalePrevData},
 	goToPage: goToPage,
 	goToImage: goToImage,
+	goToImageCL: goToImageCL,
 	goToFolder: goToFolder,
 	goToEbookId: goToEbookId,
 	goToIndex: function(v1, v2, v3, v4){readingDirection = true; calculateRealReadingDirection(v1); goToIndex(v1, v2, v3, v4)},
@@ -5480,6 +5534,7 @@ module.exports = {
 	currentImagePage: currentImagePage,
 	currentImageIndex: currentImageIndex,
 	currentPageVisibility: function(){return currentPageVisibility},
+	currentToc: currentToc,
 	totalPages: function(){return imagesNum},
 	currentPage: function(){return currentPage},
 	currentPageIndex: function(){return currentPage - 1},
@@ -5530,7 +5585,7 @@ module.exports = {
 	get ebookHasSelection(){return ebookHasSelection},
 	getConfig: getConfig,
 	isEbook: function(){return readingIsEbook},
-	isCanvas: function(){return readingIsCanvas},
+	isPdf: function(){return readingIsPdf},
 	rotateImage: rotateImage,
 	setIsLoaded: function(value){isLoaded=value},
 	isLoaded: function(value){return isLoaded},

@@ -174,7 +174,7 @@ function toUpscale(options = {})
 {
 	const upscale = _config.readingAi.upscale;
 
-	if(upscale.active && !reading.isEbook() && !reading.isCanvas() && options.width && options.height)
+	if(upscale.active && !reading.isEbook() && !reading.isPdf() && options.width && options.height)
 	{
 		const {width, height} = options;
 		const mp = width * height / 1000000;
@@ -190,7 +190,7 @@ function size(options = {})
 {
 	const upscale = _config.readingAi.upscale;
 
-	if(upscale.active && !reading.isEbook() && !reading.isCanvas() && options.width && options.height)
+	if(upscale.active && !reading.isEbook() && !reading.isPdf() && options.width && options.height)
 	{
 		const {width, height} = options;
 		const mp = width * height / 1000000;

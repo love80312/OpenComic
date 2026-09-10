@@ -941,7 +941,7 @@ function zoomIn()
 	else if(factor < 0.50)
 		factor = 0.50;
 
-	storage.updateVar('config', 'zoomFactor', factor);
+	storage.setKey('config', 'zoomFactor', factor);
 
 	electron.webFrame.setZoomFactor(Math.round(factor * 100) / 100);
 }
@@ -966,14 +966,14 @@ function zoomOut()
 	else if(factor < 0.50)
 		factor = 0.50;
 
-	storage.updateVar('config', 'zoomFactor', factor);
+	storage.setKey('config', 'zoomFactor', factor);
 
 	electron.webFrame.setZoomFactor(Math.round(factor * 100) / 100);
 }
 
 function resetZoom()
 {
-	storage.updateVar('config', 'zoomFactor', 1);
+	storage.setKey('config', 'zoomFactor', 1);
 
 	electron.webFrame.setZoomLevel(0);
 }
@@ -1045,8 +1045,8 @@ function generateAppMenu(force = false)
 			{
 				label: language.menu.debug.main,
 				submenu: [
-					{label: language.menu.debug.reload, click: function(){electronRemote.getCurrentWindow().webContents.reload();}, accelerator: 'CmdOrCtrl+R'},
-					{label: language.menu.debug.forceReload, click: function(){electronRemote.getCurrentWindow().webContents.reloadIgnoringCache();}, accelerator: 'CmdOrCtrl+Shift+R'},
+					{label: language.menu.debug.reload, click: async function(){await prevToReload(); electronRemote.getCurrentWindow().webContents.reload();}, accelerator: 'CmdOrCtrl+R'},
+					{label: language.menu.debug.forceReload, click: async function(){await prevToReload(); electronRemote.getCurrentWindow().webContents.reloadIgnoringCache();}, accelerator: 'CmdOrCtrl+Shift+R'},
 					{label: language.menu.debug.toggleDevTools, click: function(){electronRemote.getCurrentWindow().webContents.toggleDevTools();}, accelerator: 'CmdOrCtrl+Shift+I'},
 				]
 			},
@@ -1194,6 +1194,21 @@ function printMemoryUsage()
 function reload()
 {
 	electronRemote.getCurrentWindow().webContents.reload();
+}
+
+async function prevToReload()
+{
+	console.log('prevToReload');
+	const saved = reading.progress.save();
+	tabs.restore.save(false, true);
+	// settings.purgeTemporaryFiles();
+	// cache.purge();
+	ebook.closeAllRenders();
+	workers.closeAllWorkers();
+	// storage.backup.save();
+	// storage.purgeOldAtomic();
+
+	await app.sleep(100);
 }
 
 function escapeBackSlash(string)

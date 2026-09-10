@@ -1449,92 +1449,92 @@ async function setTabState(data)
 
 function setMaxMargin(value, save = false)
 {
-	if(save) storage.updateVar('config', 'readingMaxMargin', value);
+	if(save) storage.setKey('config', 'readingMaxMargin', value);
 }
 
 function setCacheMaxSize(value, save = false)
 {
-	if(save) storage.updateVar('config', 'cacheMaxSize', value);
+	if(save) storage.setKey('config', 'cacheMaxSize', value);
 }
 
 function setCacheMaxOld(value, save = false)
 {
-	if(save) storage.updateVar('config', 'cacheMaxOld', value);
+	if(save) storage.setKey('config', 'cacheMaxOld', value);
 }
 
 function setGlobalZoom(value)
 {
-	storage.updateVar('config', 'readingGlobalZoom', value);
+	storage.setKey('config', 'readingGlobalZoom', value);
 }
 
 function setMoveZoomWithMouse(value)
 {
-	storage.updateVar('config', 'readingMoveZoomWithMouse', value);
+	storage.setKey('config', 'readingMoveZoomWithMouse', value);
 }
 
 function setScrollWithMouse(value)
 {
-	storage.updateVar('config', 'readingScrollWithMouse', value);
+	storage.setKey('config', 'readingScrollWithMouse', value);
 }
 
 function setStartReadingInFullScreen(value)
 {
-	storage.updateVar('config', 'readingStartReadingInFullScreen', value);
+	storage.setKey('config', 'readingStartReadingInFullScreen', value);
 }
 
 function setTrackingAtTheEnd(value)
 {
-	storage.updateVar('config', 'readingTrackingAtTheEnd', value);
+	storage.setKey('config', 'readingTrackingAtTheEnd', value);
 }
 
 function setIgnoreSingleFoldersLibrary(value)
 {
-	storage.updateVar('config', 'ignoreSingleFoldersLibrary', value);
+	storage.setKey('config', 'ignoreSingleFoldersLibrary', value);
 }
 
 function setShowFullPathLibrary(value)
 {
-	storage.updateVar('config', 'showFullPathLibrary', value);
+	storage.setKey('config', 'showFullPathLibrary', value);
 }
 
 function setShowFullPathOpened(value)
 {
-	storage.updateVar('config', 'showFullPathOpened', value);
+	storage.setKey('config', 'showFullPathOpened', value);
 }
 
 function setStartInFullScreen(value)
 {
-	storage.updateVar('config', 'startInFullScreen', value);
+	storage.setKey('config', 'startInFullScreen', value);
 }
 
 function setStartInContinueReading(value)
 {
-	storage.updateVar('config', 'startInContinueReading', value);
+	storage.setKey('config', 'startInContinueReading', value);
 
 	dom.query('.settings-start-only-from-library').class(!value, 'disable-pointer');
 }
 
 function setStartOnlyFromLibrary(value)
 {
-	storage.updateVar('config', 'startOnlyFromLibrary', value);
+	storage.setKey('config', 'startOnlyFromLibrary', value);
 }
 
 function setStartOnStartup(value)
 {
-	storage.updateVar('config', 'startOnStartup', value);
+	storage.setKey('config', 'startOnStartup', value);
 	electron.ipcRenderer.send('open-at-login', value);
 }
 
 function setCheckReleases(value)
 {
-	storage.updateVar('config', 'checkReleases', value);
+	storage.setKey('config', 'checkReleases', value);
 
 	dom.query('.settings-check-prereleases').class(!value, 'disable-pointer');
 }
 
 function setCheckPreReleases(value)
 {
-	storage.updateVar('config', 'checkPreReleases', value);
+	storage.setKey('config', 'checkPreReleases', value);
 }
 
 function set(key, value, save = true)
@@ -1611,7 +1611,7 @@ function set(key, value, save = true)
 	}
 
 	if(save)
-		storage.updateVar('config', key, value);
+		storage.setKey('config', key, value);
 
 	switch (key)
 	{
@@ -1640,7 +1640,7 @@ function setInit(key, value, save = true)
 	}
 
 	if(save)
-		storage.updateVar('configInit', key, value);
+		storage.setKey('configInit', key, value);
 }
 
 function getTmpFolder(options = {})

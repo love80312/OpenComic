@@ -182,6 +182,15 @@ var ebook = function(book, config = {}) {
 	this.splitInPages = async function(html, basePath, path = false, chapter = {}) {
 
 		html = html.cloneNode(true);
+		const root = html.documentElement || html;
+
+		if(!html.body && root.namespaceURI === 'http://www.w3.org/2000/svg')
+		{
+			const doc = document.implementation.createHTMLDocument();
+			doc.body.appendChild(doc.importNode(root, true));
+			html = doc.documentElement;
+		}
+
 		html = await this.removeScripts(html); // This is unsafe, later the Sanitizer API would have to be applied
 		html = await this.resolvePaths(html, basePath);
 		html = await this.applyConfigToHtml(html, chapter);
@@ -481,7 +490,21 @@ var ebook = function(book, config = {}) {
 
 	this.getPageIds = async function(arrayBody) {
 
-		let ids = [];
+		const ids = [];
+		const self = this;
+
+		const getId = function(node, key = 'id') {
+
+			const id = node.getAttribute(key);
+			if(!id) return;
+
+			if(!self.chapterIds[id])
+			{
+				self.chapterIds[id] = true;
+				ids.push(id);
+			}
+
+		}
 
 		for(let i = 0, len = arrayBody.length; i < len; i++)
 		{
@@ -489,28 +512,15 @@ var ebook = function(book, config = {}) {
 
 			if(node.hasAttribute)
 			{
-				if(node.hasAttribute('id'))
-				{
-					let id = node.getAttribute('id');
-					
-					if(!this.chapterIds[id])
-					{
-						this.chapterIds[id] = true;
-						ids.push(id);
-					}
-				}
+				getId(node, 'id');
+				getId(node, 'oc-id');
 
-				let childsIds = node.querySelectorAll('[id]');
+				let childsIds = node.querySelectorAll('[id], [oc-id]');
 
 				for(let i2 = 0, len2 = childsIds.length; i2 < len2; i2++)
 				{
-					let id = childsIds[i2].getAttribute('id');
-
-					if(!this.chapterIds[id])
-					{
-						this.chapterIds[id] = true;
-						ids.push(id);
-					}
+					getId(childsIds[i2], 'id');
+					getId(childsIds[i2], 'oc-id');
 				}
 			}
 		}
@@ -652,6 +662,7 @@ var ebook = function(book, config = {}) {
 				transform-origin: top left !important;
 				width: ${chapter.width}px;
 				height: ${chapter.height}px;
+				margin: 0;
 			}
 		`;
 
@@ -720,7 +731,10 @@ var ebook = function(book, config = {}) {
 			bodyCssNotSplit.push('text-align: '+config.textAlign+' !important');
 
 		if(config.margin !== false)
+		{
 			bodyCss.push('margin: '+config.margin.top+'px '+config.margin.right+'px '+config.margin.bottom+'px '+config.margin.left+'px !important');
+			bodyCss.push('max-width: calc(100vw - '+(config.margin.left + config.margin.right)+'px) !important');
+		}
 
 		if(config.letterSpacing > -0.1)
 			allCss.push('letter-spacing: '+config.letterSpacing+'em !important');
@@ -798,6 +812,11 @@ var ebook = function(book, config = {}) {
 
 			body a {
 				`+(config.colors && config.colors.links ? 'color: '+config.colors.links+' !important;' : '')+`
+			}
+
+			body a[filepos]
+			{
+				cursor: pointer;
 			}
 
 			/* Fix justified content */
@@ -879,7 +898,9 @@ var ebook = function(book, config = {}) {
 
 	this.resolvePath = function(path, basePath) {
 
-		if(path.startsWith('file:'))
+		if(path.startsWith('data:') || path.startsWith('blob:') || path.startsWith('base64,') || path.startsWith('base64:'))
+			return path;
+		else if(path.startsWith('file:'))
 			return this.removeFileScheme(path);
 		else if(path.startsWith('http://') || path.startsWith('https://') || path.startsWith('mailto:'))
 			return path;
@@ -974,24 +995,55 @@ var ebook = function(book, config = {}) {
 
 	}
 
-	this._generateTocWithPages = function(items, hrefPage) {
+	this.resolveKindleLink = false;
+
+	this.getPage = async function(item = {}) {
+
+		let {id = '', href = '', kindle = ''} = item;
+		const hrefPage = this.hrefPage;
+
+		if(kindle)
+		{
+			const kindleLink = await this.resolveKindleLink(kindle);
+			id = kindleLink?.id || '';
+		}
+
+		if(hrefPage[href])
+			return hrefPage[href];
+
+		const _href = href.replace(/^\.+[\/\\]/, '');
+
+		if(hrefPage[_href])
+			return hrefPage[_href];
+
+		const chaptersIdPage = this.chaptersIdPage;
+
+		for(const index in chaptersIdPage)
+		{
+			const ids = chaptersIdPage[index];
+
+			if(ids[id])
+				return ids[id];
+		}
+
+		return false;
+	}
+
+	this._generateTocWithPages = async function(items) {
 
 		const toc = [];
 
 		for(let i = 0, len = items.length; i < len; i++)
 		{
 			const item = items[i];
-			const href = item.href || '';
-			const _href = href.replace(/^\.+[\/\\]/, '');
-
-			const page = hrefPage[href] !== undefined ? hrefPage[href] : (hrefPage[_href] !== undefined ? hrefPage[_href] : false);
+			const page = await this.getPage(item);
 
 			this.tocPages.push(page);
 
 			toc.push({
 				name: item.label.trim(),
 				page: page,
-				subitems: item.subitems ? this._generateTocWithPages(item.subitems, hrefPage) : false,
+				subitems: item.subitems ? await this._generateTocWithPages(item.subitems) : false,
 			});
 		}
 
@@ -1005,7 +1057,7 @@ var ebook = function(book, config = {}) {
 	this.hrefPage = {};
 
 	// This is slow, it should be optimized
-	this.generateTocWithPages = function(toc) {
+	this.generateTocWithPages = async function(toc) {
 
 		this.tocPages = [];
 
@@ -1078,7 +1130,7 @@ var ebook = function(book, config = {}) {
 		this.hrefPage = hrefPage;
 		this.chaptersIdPage = chaptersIdPage;
 
-		return this.toc = this._generateTocWithPages(toc, hrefPage);
+		return this.toc = await this._generateTocWithPages(toc);
 
 	}
 

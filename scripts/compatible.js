@@ -117,6 +117,13 @@ const compatible = {
 			'epub': 'application/epub+zip',
 			'epub3': 'application/epub+zip',
 		},
+		foliate: {
+			// Ebook formats supported by Foliate, except for epub
+			'mobi': 'application/x-mobipocket-ebook',
+			'azw': 'application/vnd.amazon.ebook',
+			'azw3': 'application/vnd.amazon.ebook',
+			'fb2': 'application/x-fictionbook+xml',
+		},
 	},
 	audio: {
 		all: {
@@ -240,6 +247,13 @@ const compatibleMime = {
 		epub: {
 			'application/epub+zip': 'epub',
 		},
+		foliate: {
+			// Ebook formats supported by Foliate, except for epub
+			'application/x-mobipocket-ebook': 'mobi',
+			'application/vnd.amazon.ebook': 'azw',
+			'application/vnd.amazon.ebook': 'azw3',
+			'application/x-fictionbook+xml': 'fb2',
+		},
 	},
 	audio: {
 		all: {
@@ -334,6 +348,7 @@ compatible.compressed.all = [
 	...compatible.compressed._7z,
 	...compatible.compressed.pdf,
 	...compatible.compressed.epub,
+	...compatible.compressed.foliate,
 ];
 
 // Join mime images
@@ -369,6 +384,7 @@ compatibleMime.compressed.all = [
 	...compatibleMime.compressed._7z,
 	...compatibleMime.compressed.pdf,
 	...compatibleMime.compressed.epub,
+	...compatibleMime.compressed.foliate,
 ];
 
 // Generate open

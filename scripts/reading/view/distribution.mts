@@ -21,7 +21,7 @@ export interface Item {
 
 	blank: boolean;
 	folder: boolean;
-	canvas?: boolean;
+	pdf?: boolean;
 	ebook?: boolean;
 
 	width: number;

@@ -342,7 +342,7 @@
 				</div>
 
 				<div class="chip chip-big label-large chip-icon-left chip-icon-right reading-view-panels gamepad-item{{#compare _config.readingView '==' 'panels'}} active{{/compare}}" onclick="reading.changePagesView(1, 'panels', false)">
-					<div></div><i class="material-icon" onclick="">space_dashboard</i> <span>{{language.reading.pages.panels}}</span> <i class="material-icon right" onclick="reading.panels.configDialog(event)">settings</i>
+					<div></div><i class="material-icon" onclick="">space_dashboard</i> <span>{{language.reading.pages.panels}} ({{language.global.alpha}})</span> <i class="material-icon right" onclick="reading.panels.configDialog(event)">settings</i>
 				</div>
 
 				<div class="chip chip-big label-large chip-icon-left reading-view-fade gamepad-item{{#compare _config.readingView '==' 'fade'}} active{{/compare}}{{#if _config.readingWebtoon}} disable-pointer{{/if}}" onclick="reading.changePagesView(1, 'fade', false)">

@@ -405,8 +405,10 @@ async function getSizesFromBuffer(getImageBuffers, buffers)
 {
 	const ImageSize = async function(buffer) {
 
+		// TODO: Temporaly change image-size to image-size-next to fix vulnerability issue. Remove this when image-size is fixed.
+		// See: https://github.com/image-size/image-size#tired-maintainer-doesnt-want-your-slop
 		if(imageSize === false)
-			imageSize = require('image-size').imageSize;
+			imageSize = require('image-size-next').imageSize;
 
 		const dimensions = imageSize(buffer);
 		return applyOrientation(dimensions);
@@ -502,8 +504,10 @@ async function getSizes(images)
 
 	const ImageSize = async function(image) {
 
+		// TODO: Temporaly change image-size to image-size-next to fix vulnerability issue. Remove this when image-size is fixed.
+		// See: https://github.com/image-size/image-size#tired-maintainer-doesnt-want-your-slop
 		if(imageSizeFromFile === false)
-			imageSizeFromFile = require('image-size/fromFile').imageSizeFromFile;
+			imageSizeFromFile = require('image-size-next/fromFile').imageSizeFromFile;
 
 		const dimensions = await imageSizeFromFile(path);
 		return applyOrientation(dimensions);

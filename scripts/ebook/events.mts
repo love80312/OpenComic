@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare const p: any;
+declare const app: any;
 declare const electronRemote: any;
 declare const reading: any;
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -45,7 +46,7 @@ function replicateMouseEvent(iframe: HTMLIFrameElement, event: MouseEvent): void
 			event.preventDefault();
 
 			if(event.type === 'click')
-				openLink(link.href);
+				openLink(link.href, link);
 
 			return;
 		}
@@ -55,18 +56,24 @@ function replicateMouseEvent(iframe: HTMLIFrameElement, event: MouseEvent): void
 	iframe.dispatchEvent(mouseEvent);
 }
 
-function openLink(link: string)
+function openLink(link: string, linkElement: Element): void
 {
-	const isLocal = link.startsWith('file://') || link.startsWith('data:') || link.startsWith('/') || link.startsWith('./') || link.startsWith('../') || link.startsWith(p.sep);
+	const filepos = linkElement.getAttribute('filepos');
+	const kindle = app.extract(/(kindle:pos:fid:\w+:off:\w+)/iu, link, 1);
+	const isLocal = link.startsWith('file://') || link.startsWith('data:') || link.startsWith('/') || link.startsWith('./') || link.startsWith('../') || link.startsWith(p.sep) || filepos || kindle;
 
 	if(isLocal)
 	{
-		const id = link.split('#')[1]?.split('?')[0];
+		let id = link.split('#')[1]?.split('?')[0];
 
 		const parts = link.split('/');
-		const href = parts.pop()!.split('#')[0] + '#' + id;
+		const href = parts.pop()!.split('#')[0] + (id ? '#' + id : '');
 
-		reading.goToEbookId(id, href);
+		// mobi files
+		if(filepos && !id)
+			id = `filepos${filepos}`;
+
+		reading.goToEbookId({id, href, kindle});
 	}
 	else
 	{

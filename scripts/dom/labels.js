@@ -395,7 +395,7 @@ function deleteFromSortAndView(name, index)
 		}
 	}
 
-	storage.updateVar('config', 'sortAndView', sortAndView);
+	storage.setKey('config', 'sortAndView', sortAndView);
 }
 
 var labelsDialogPath = false;

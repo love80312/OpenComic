@@ -864,7 +864,7 @@ function updateStorageMD(data, defaultObj)
 	return newData;
 }
 
-function updateVar(key, keyVar, value)
+function setKey(key, keyVar, value)
 {
 	if(typeof storageJson[key] === 'undefined')
 		storageJson[key] = {};
@@ -875,7 +875,7 @@ function updateVar(key, keyVar, value)
 	setLastUpdate(key);
 }
 
-function deleteVar(key, keyVar)
+function deleteKey(key, keyVar)
 {
 	if(typeof storageJson[key] === 'undefined')
 		storageJson[key] = {};
@@ -886,7 +886,7 @@ function deleteVar(key, keyVar)
 	setLastUpdate(key);
 }
 
-function update(key, value)
+function set(key, value)
 {
 	storageJson[key] = value;
 
@@ -1127,16 +1127,12 @@ module.exports = {
 	start: start,
 	config: _config,
 	get: get,
-	getKey: getKey,
-	lastUpdate: _lastUpdate,
-	updateVar: updateVar,
-	setVar: updateVar,
-	setKey: updateVar,
-	deleteKey: deleteVar,
-	deleteVar: deleteVar,
-	set: update,
+	set: set,
 	setThrottle: setThrottle,
-	update: update,
+	lastUpdate: _lastUpdate,
+	getKey: getKey,
+	setKey: setKey,
+	deleteKey: deleteKey,
 	push: push,
 	storageJson: storageJson,
 	updateStorageMD: updateStorageMD,

@@ -538,7 +538,7 @@ function change(key, value)
 	}
 
 	setProperty(config.readingMusic, key, value);
-	storage.setVar('config', 'readingMusic', config.readingMusic);
+	storage.setKey('config', 'readingMusic', config.readingMusic);
 
 	switch(key)
 	{

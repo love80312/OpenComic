@@ -37,7 +37,7 @@ function showReleaseDialog(release)
 
 function setLastCheckedRelease(name)
 {
-	storage.updateVar('config', 'lastCheckedRelease', name);
+	storage.setKey('config', 'lastCheckedRelease', name);
 }
 
 function versionIsHigher(lowest, highest)
@@ -69,7 +69,7 @@ function check(force = false)
 	if(now - config.lastCheckedReleaseTime < 3600000 && !force) // Check at most once an hour
 		return;
 
-	storage.updateVar('config', 'lastCheckedReleaseTime', now);
+	storage.setKey('config', 'lastCheckedReleaseTime', now);
 
 	let options = {
 		headers:{

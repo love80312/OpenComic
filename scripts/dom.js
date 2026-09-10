@@ -1941,7 +1941,7 @@ function changeLanguage(lan)
 
 	dom.loadIndexContentLeft(false);
 	template.loadHeader('languages.header.html', false);
-	storage.updateVar('config', 'language', lan);
+	storage.setKey('config', 'language', lan);
 
 	gamepad.updateBrowsableItems(gamepad.currentKey());
 	tabs.update();
@@ -2210,7 +2210,7 @@ function changeView(mode, page)
 			sortAndView.view = mode;
 			config.sortAndView[labelKey] = sortAndView;
 
-			storage.updateVar('config', 'sortAndView', config.sortAndView);
+			storage.setKey('config', 'sortAndView', config.sortAndView);
 			selectElement('.view-'+mode);
 			changed = true;
 		}
@@ -2228,7 +2228,7 @@ function changeView(mode, page)
 
 		if(mode != config['view'+extraKey])
 		{
-			storage.updateVar('config', 'view'+extraKey, mode);
+			storage.setKey('config', 'view'+extraKey, mode);
 			selectElement('.view-'+mode);
 			changed = true;
 		}
@@ -2264,7 +2264,7 @@ function changeViewModuleSize(size, end, page)
 			sortAndView.viewModuleSize = size;
 			config.sortAndView[labelKey] = sortAndView;
 
-			storage.updateVar('config', 'sortAndView', config.sortAndView);
+			storage.setKey('config', 'sortAndView', config.sortAndView);
 			changed = true;
 		}
 	}
@@ -2281,7 +2281,7 @@ function changeViewModuleSize(size, end, page)
 
 		if(size != config['viewModuleSize'+extraKey])
 		{
-			storage.updateVar('config', 'viewModuleSize'+extraKey, size);
+			storage.setKey('config', 'viewModuleSize'+extraKey, size);
 			changed = true;
 		}
 	}
@@ -2331,7 +2331,7 @@ function changeSort(type, mode, page)
 		{
 			config.sortAndView[labelKey] = sortAndView;
 
-			storage.updateVar('config', 'sortAndView', config.sortAndView);
+			storage.setKey('config', 'sortAndView', config.sortAndView);
 			selectElement('.sort-'+mode);
 		}
 	}
@@ -2350,7 +2350,7 @@ function changeSort(type, mode, page)
 		{
 			if(mode != config['sort'+extraKey])
 			{
-				storage.updateVar('config', 'sort'+extraKey, mode);
+				storage.setKey('config', 'sort'+extraKey, mode);
 				selectElement('.sort-'+mode);
 				changed = true;
 			}
@@ -2363,7 +2363,7 @@ function changeSort(type, mode, page)
 		{
 			if(mode != config['sortInvert'+extraKey])
 			{
-				storage.updateVar('config', 'sortInvert'+extraKey, mode);
+				storage.setKey('config', 'sortInvert'+extraKey, mode);
 				changed = true;
 			}
 		}
@@ -2371,7 +2371,7 @@ function changeSort(type, mode, page)
 		{
 			if(mode != config['foldersFirst'+extraKey])
 			{
-				storage.updateVar('config', 'foldersFirst'+extraKey, mode);
+				storage.setKey('config', 'foldersFirst'+extraKey, mode);
 				changed = true;
 			}
 		}
@@ -2379,7 +2379,7 @@ function changeSort(type, mode, page)
 		{
 			if(mode != config['compressedFirst'+extraKey])
 			{
-				storage.updateVar('config', 'compressedFirst'+extraKey, mode);
+				storage.setKey('config', 'compressedFirst'+extraKey, mode);
 				changed = true;
 			}
 		}
@@ -2408,7 +2408,7 @@ function changeConfig(key, value, page)
 		sortAndView[key] = value;
 
 		config.sortAndView[labelKey] = sortAndView;
-		storage.updateVar('config', 'sortAndView', config.sortAndView);
+		storage.setKey('config', 'sortAndView', config.sortAndView);
 	}
 	else
 	{
@@ -2419,7 +2419,7 @@ function changeConfig(key, value, page)
 		else if(page == 'index')
 			extraKey = 'Index';
 
-		storage.updateVar('config', key+extraKey, value);
+		storage.setKey('config', key+extraKey, value);
 	}
 
 	dom.reload();
@@ -2447,14 +2447,14 @@ function nightMode(force = null)
 		_app.classList.remove('night-mode');
 		dom.queryAll('.button-night-mode').html('light_mode');
 		handlebarsContext.nightMode = false;
-		storage.updateVar('config', 'nightMode', false);
+		storage.setKey('config', 'nightMode', false);
 	}
 	else
 	{
 		_app.classList.add('night-mode');
 		dom.queryAll('.button-night-mode').html('dark_mode');
 		handlebarsContext.nightMode = true;
-		storage.updateVar('config', 'nightMode', true);
+		storage.setKey('config', 'nightMode', true);
 	}
 
 	nightModeConfig(_app);
@@ -2790,7 +2790,7 @@ function removeComic(path, confirm = false, reload = true)
 			_comics.push(comics[i]);
 	}
 
-	storage.update('comics', _comics);
+	storage.set('comics', _comics);
 
 	if(reload) dom.reload();
 }
@@ -2922,7 +2922,7 @@ async function openComic(animation = true, path = true, mainPath = true, end = f
 
 	reading.hideContent(isFullScreen, true);
 
-	let isCanvas = false;
+	let isPdf = false;
 	let isEbook = false;
 	let compressedFile = fileManager.lastCompressedFile(path);
 
@@ -2931,10 +2931,10 @@ async function openComic(animation = true, path = true, mainPath = true, end = f
 		let features = fileManager.fileCompressed(compressedFile);
 		features = features.getFeatures();
 
-		if(features.canvas && !file.config.extractDocumentImages)
+		if(features.pdf && !file.config.extractDocumentImages)
 		{
 			await file.makeAvailable([{path: compressedFile}]);
-			isCanvas = true;
+			isPdf = true;
 		}
 		else if(features.ebook && !file.config.extractDocumentImages)
 		{
@@ -3019,7 +3019,7 @@ async function openComic(animation = true, path = true, mainPath = true, end = f
 					path: file.path,
 					mainPath: mainPath,
 					size: file.size || false,
-					canvas: isCanvas,
+					pdf: isPdf,
 					ebook: isEbook,
 					folder: false,
 				});		
@@ -3097,7 +3097,7 @@ async function openComic(animation = true, path = true, mainPath = true, end = f
 
 	});
 
-	reading.read(path, indexStart, end, isCanvas, isEbook, imagePath);
+	reading.read(path, indexStart, end, isPdf, isEbook, imagePath);
 	reading.hideContent(isFullScreen, true);
 	reading.music.read(hasMusic, files);
 

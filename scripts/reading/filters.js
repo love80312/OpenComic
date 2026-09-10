@@ -1261,7 +1261,7 @@ function saveAsPreset(save = false)
 				colors: getColors(),
 			});
 
-			storage.update('colorPresets', colorPresets);
+			storage.set('colorPresets', colorPresets);
 
 			events.closeDialog();
 		}
@@ -1319,7 +1319,7 @@ function editPreset(key, save = false)
 			if(colorPresets[key])
 			{
 				colorPresets[key].name = name;
-				storage.update('colorPresets', colorPresets);
+				storage.set('colorPresets', colorPresets);
 
 				saveColorize(getColors(), true);
 			}
@@ -1363,7 +1363,7 @@ function removePreset(key)
 	if(colorPresets[key])
 	{
 		colorPresets.splice(key, 1);
-		storage.update('colorPresets', colorPresets);
+		storage.set('colorPresets', colorPresets);
 
 		saveColorize(getColors(), true);
 	}

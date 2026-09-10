@@ -8,7 +8,7 @@ function show(event, gamepad = false)
 
 	const elementFromPoint = shortcuts.elementFromPoint;
 
-	const saveImages = (reading.isCanvas() || reading.isEbook()) ? false : true;
+	const saveImages = (reading.isPdf() || reading.isEbook()) ? false : true;
 	dom.queryAll('.separator-set-as-poster, .reading-context-menu-copy-image, .separator-save-images, .reading-context-menu-save-image, .reading-context-menu-save-all-images, .reading-context-menu-save-bookmarks-images, .reading-context-menu-save-all-bookmarks-images, .reading-context-menu-set-as-poster, .reading-context-menu-set-as-poster-folders').css({display: saveImages ? '' : 'none'});
 
 	if(saveImages)

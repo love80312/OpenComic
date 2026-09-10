@@ -269,6 +269,9 @@ var file = function(path, _config = false) {
 
 					setFileData(path, json.files);
 
+					if(json.metadata)
+						this.saveCompressedMetadata(path, json.metadata, true);
+
 					return json.files;
 				}
 
@@ -720,11 +723,19 @@ var file = function(path, _config = false) {
 
 	}
 
-	this.saveCompressedMetadata = function(path, metadata) {
+	this.saveCompressedMetadata = function(path, metadata, onlyIfChanged = false) {
 
 		if(metadata.title || metadata.author)
 		{
-			storage.setVar('compressedMetadata', path, {
+			if(onlyIfChanged)
+			{
+				const currentMetadata = storage.getKey('compressedMetadata', path);
+
+				if(currentMetadata && currentMetadata.title === metadata.title && currentMetadata.author === metadata.author)
+					return;
+			}
+
+			storage.setKey('compressedMetadata', path, {
 				title: metadata.title,
 				author: metadata.author,
 			});
@@ -1035,7 +1046,8 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 			read: true,
 			single: true,
 			vector: false,
-			canvas: false,
+			// canvas: false,
+			pdf: false,
 			html: false,
 			ebook: false,
 			progress: true,
@@ -1044,7 +1056,8 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 			read: true,
 			single: true,
 			vector: true,
-			canvas: true,
+			// canvas: true,
+			pdf: true,
 			html: true,
 			ebook: false,
 			progress: true,
@@ -1053,7 +1066,18 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 			read: true,
 			single: true,
 			vector: true,
-			canvas: false,
+			// canvas: false,
+			pdf: false,
+			html: true,
+			ebook: true,
+			progress: true,
+		},
+		foliate: {
+			read: true,
+			single: true,
+			vector: true,
+			// canvas: false,
+			pdf: false,
 			html: true,
 			ebook: true,
 			progress: true,
@@ -1133,6 +1157,8 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 				force = 'pdf';
 			else if(compatible.compressed.epub.has(ext))
 				force = 'epub';
+			else if(compatible.compressed.foliate.has(ext))
+				force = 'foliate';
 		}
 
 		this.features = this._features[force];
@@ -1190,7 +1216,7 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 				files = await this.read7z();
 			else if(this.features.pdf)
 				files = await this.readPdf();
-			else if(this.features.epub)
+			else if(this.features.epub || this.features.foliate)
 				files = await this.readEpub();
 		}
 		catch(error)
@@ -1223,7 +1249,7 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 			return this.readCompressedMetadata();
 		else if(this.features.pdf)
 			return this.readPdfMetadata();
-		else if(this.features.epub)
+		else if(this.features.epub || this.features.foliate)
 			return this.readEpubMetadata();
 
 		return {};
@@ -1613,7 +1639,7 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 				files = await this.extract7z();
 			else if(this.features.pdf)
 				files = await this.extractPdf();
-			else if(this.features.epub)
+			else if(this.features.epub || this.features.foliate)
 				files = await this.extractEpub();
 		}
 		catch(error)
@@ -1721,6 +1747,8 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 
 	this.saveEbookPagesCache = async function(pages, config = {}) {
 
+		if(this.features.foliate) return;
+
 		const _isServer = isServer(this.realPath);
 		const mtime = !_isServer ? fs.statSync(firstCompressedFile(this.realPath)).mtime.getTime() : 1;
 
@@ -1746,7 +1774,9 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 
 	this.ebookPagesCache = async function(config = {}) {
 
-		if(this.config.cache)
+		if(this.features.foliate) return false;
+
+		if(this.config.cache && window.disableEbookPagesCache !== true)
 		{
 			const _isServer = isServer(this.realPath);
 			const mtime = !_isServer ? fs.statSync(firstCompressedFile(this.realPath)).mtime.getTime() : 1;
@@ -2331,6 +2361,7 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 
 	// PDF
 	this.pdf = false;
+	this.pdfToc = false;
 
 	this.openPdf = async function() {
 
@@ -2348,6 +2379,58 @@ var fileCompressed = function(path, _realPath = false, forceType = false, prefix
 		}).promise;
 
 		return this.pdf;
+
+	}
+
+	this.readPdfToc = async function() {
+
+		if(this.pdfToc)
+			return this.pdfToc;
+
+		const pdf = await this.openPdf();
+		const outline = await pdf.getOutline();
+
+		const getPage = async function(destination) {
+
+			if(!destination)
+				return false;
+
+			try
+			{
+				if(typeof destination === 'string')
+					destination = await pdf.getDestination(destination);
+
+				if(!Array.isArray(destination) || !destination[0])
+					return false;
+
+				return await pdf.getPageIndex(destination[0]) + 1;
+			}
+			catch(error)
+			{
+				console.warn('Failed to resolve PDF outline destination', error);
+				return false;
+			}
+
+		};
+
+		const normalize = async function(items) {
+
+			if(!Array.isArray(items))
+				return [];
+
+			return Promise.all(items.map(async function(item) {
+
+				return {
+					name: String(item.title || '').trim(),
+					page: await getPage(item.dest),
+					subitems: await normalize(item.items),
+				};
+
+			}));
+
+		};
+
+		return this.pdfToc = await normalize(outline);
 
 	}
 
