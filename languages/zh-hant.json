@@ -6,7 +6,7 @@
 		"collection": "收藏品",
 		"library": "書庫",
 		"recents": "近期",
-		"recentlyOpened": "最近打開",
+		"recentlyOpened": "近期開啟",
 		"favorites": "最愛",
 		"labels": "標籤",
 		"editLabels": "編輯標籤",
@@ -116,12 +116,12 @@
 	"comics": {
 		"continueReading": "繼續閱讀",
 		"continueReadingNotExists": "繼續閱讀中儲存的檔案目前不存在",
-		"recentlyAdded": "最近新增",
-		"emptyIndex": "書庫裡還沒有漫畫。",
-		"emptyFolder": "此資料夾中沒有受支援的檔案。",
-		"emptyRecentlyOpened": "沒有最近打開的檔案",
-		"emptyFavorites": "沒有最愛漫畫",
-		"emptyLabel": "此標籤下沒有漫畫"
+		"recentlyAdded": "近期新增",
+		"emptyIndex": "書庫內還沒有漫畫。",
+		"emptyFolder": "此資料夾中沒有相容的檔案",
+		"emptyRecentlyOpened": "無近期開啟的檔案",
+		"emptyFavorites": "無最愛漫畫",
+		"emptyLabel": "此標籤下無漫畫"
 	},
 	"servers": {
 		"offlineMode": "離線模式",
@@ -255,7 +255,7 @@
 			"marked": "已標記",
 			"sites": "網站",
 			"favoriteSites": "最愛網站",
-			"emptyFavoriteSites": "沒有最愛網站",
+			"emptyFavoriteSites": "無最愛網站",
 			"problemChapter": "沒有檢測到章節",
 			"chapters": "章節",
 			"chapter": "章節",
@@ -294,7 +294,7 @@
 				"nextPanels": "聚焦於後一個面板"
 			},
 			"showFullPage": {
-				"beforeFirstPanel": "在第一個分格前顯示完整頁面",
+				"beforeFirstPanel": "在第一個面板之前顯示完整頁面",
 				"afterLastPanel": "最後的面板之後顯示完整頁面"
 			},
 			"hideEffect": "隱藏效果",
@@ -310,14 +310,14 @@
 		"moreOptions": {
 			"main": "更多選項",
 			"hideBarHeader": "隱藏標題列",
-			"hideTabsBar": "隱藏標籤欄",
+			"hideTabsBar": "隱藏分頁欄",
 			"hideContentLeft": "隱藏左側選單",
 			"showPageNumber": "顯示頁碼"
 		},
 		"viewBookmarks": "查看書籤",
 		"addBookmark": "新增書籤",
 		"removeBookmark": "移除書籤",
-		"emptyBookmarks": "暫無書籤",
+		"emptyBookmarks": "無書籤",
 		"currentReading": "正在閱讀"
 	},
 	"settings": {
@@ -368,19 +368,19 @@
 			"files": "導覽（檔案）",
 			"ignoreSingleFoldersLibrary": "忽略單一資料夾(自動打開)",
 			"ignoreFilesRegex": {
-				"title": "忽略與正規表達式或檔案模式匹配的檔案和資料夾",
+				"title": "忽略相符正規表達式或檔名樣式的檔案與資料夾",
 				"description": "如果您想隱藏一些檔案和資料夾，這很有用",
 				"dialogTitle": "忽略檔案和資料夾",
-				"dialogDescription": "如果您想隱藏某些檔案和資料夾，這很有用，您可以使用正規表達式或檔案模式。範例：",
+				"dialogDescription": "如果您想隱藏某些檔案和資料夾，這很有用，您可以使用正規表達式或檔名樣式。範例：",
 				"examples": {
 					"poster": "海報和封面",
 					"miscellaneousFiles": "雜項檔案",
 					"unixHidden": "Unix 隱藏路徑"
 				},
-				"regexPattern": "正規表達式或檔案模式",
-				"addRegex": "新增正規表達式或檔案模式",
-				"noRegex": "沒有正規表達式或檔案模式",
-				"invalidRegex": "無效的正規表達式或檔案模式"
+				"regexPattern": "正規表達式或檔名樣式",
+				"addRegex": "新增正規表達式或檔名樣式",
+				"noRegex": "無正規表達式或檔名樣式",
+				"invalidRegex": "無效的正規表達式或檔名樣式"
 			},
 			"openingBehaviorFolder": "打開資料夾時的行為",
 			"openingBehaviorFolderDescription": "設置在導覽時開啟資料夾時的行為",
@@ -535,7 +535,7 @@
 		},
 		"view": {
 			"main": "查看",
-			"resetZoom": "重設縮放",
+			"resetZoom": "重置縮放",
 			"originalSize": "原始尺寸",
 			"zoomIn": "放大",
 			"zoomOut": "縮小",
