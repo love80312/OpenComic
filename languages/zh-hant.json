@@ -6,7 +6,7 @@
 		"collection": "收藏品",
 		"library": "書庫",
 		"recents": "近期",
-		"recentlyOpened": "近期開啟",
+		"recentlyOpened": "近期開啟過",
 		"favorites": "最愛",
 		"labels": "標籤",
 		"editLabels": "編輯標籤",
@@ -17,10 +17,10 @@
 			"name": "名稱",
 			"number": "頁數",
 			"nameNumber": "名稱 / 頁數",
-			"lastAdd": "最後的新增",
+			"lastAdd": "最後新增過",
 			"lastReading": "最後的閱讀",
-			"lastOpened": "最後的開啟",
-			"lastModified": "最後的修改",
+			"lastOpened": "最後開啟過",
+			"lastModified": "最後修改過",
 			"shuffle": "隨機排序",
 			"foldersFirst": "資料夾優先",
 			"compressedFirst": "壓縮檔優先",
@@ -52,15 +52,15 @@
 			"deletePermanently": "永久刪除",
 			"deletePermanentlyConfirm": "您確定要永久刪除此檔案嗎？此操作無法復原",
 			"favorite": "最愛",
-			"openInNewTab": "在新分頁中打開",
-			"openInNewWindow": "在新視窗中打開",
+			"openInNewTab": "在新分頁中開啟",
+			"openInNewWindow": "在新視窗中開啟",
 			"markAsRead": "標記為已讀",
 			"markAsUnread": "標記為未讀",
-			"openFileLocation": "打開檔案位置",
-			"openFolderLocation": "打開資料夾位置",
+			"openFileLocation": "開啟檔案位置",
+			"openFolderLocation": "開啟資料夾位置",
 			"aboutFile": "關於此檔案",
 			"addPoster": "新增封面",
-			"changePoster": "更改封面",
+			"changePoster": "變更封面",
 			"deletePoster": "刪除封面",
 			"cannotAddPoster": "如果資料夾位於壓縮檔內，則無法新增封面，您必須使用 7-zip 或其它工具編輯。",
 			"cannotDeletePoster": "如果資料夾位於壓縮檔內，則無法刪除，您必須使用 7-zip 或其它工具編輯。",
@@ -119,7 +119,7 @@
 		"recentlyAdded": "近期新增",
 		"emptyIndex": "書庫內還沒有漫畫。",
 		"emptyFolder": "此資料夾中沒有相容的檔案",
-		"emptyRecentlyOpened": "無近期開啟的檔案",
+		"emptyRecentlyOpened": "無近期開啟過檔案",
 		"emptyFavorites": "無最愛漫畫",
 		"emptyLabel": "此標籤下無漫畫"
 	},
@@ -325,12 +325,12 @@
 		"reading": {
 			"main": "閱讀",
 			"maxMargin": "最大水平和垂直邊距",
-			"globalZoom": "全局縮放而不是逐張圖片(垂直閱讀)",
-			"globalZoomSlide": "全局縮放而不是逐張圖片(水平閱讀)",
+			"globalZoom": "使用全域縮放，而非逐張圖片縮放（垂直閱讀）",
+			"globalZoomSlide": "使用全域縮放，而非逐張圖片縮放（滑動閱讀）",
 			"moveZoomWithMouse": "使用游標移動縮放(停用拖曳移動)",
-			"scrollWithMouse": "當游標位於螢幕中央垂直移動時自動滾動 (停用拖放滾動)",
-			"goNextPrevChapterWithScroll": "以滑鼠滾動切換至後一章/前一章(垂直閱讀)",
-			"turnPagesWithMouseWheel": "以滑鼠滾輪翻頁(僅按住 Ctrl 鍵時可縮放)",
+			"scrollWithMouse": "在螢幕中央垂直移動遊標時自動捲動（停用拖放捲動）",
+			"goNextPrevChapterWithScroll": "以滑鼠滾輪前往上一章／下一章（垂直閱讀）",
+			"turnPagesWithMouseWheel": "以滑鼠滾輪翻頁（僅在按住 Ctrl 鍵時縮放）",
 			"autodetectWebtoon": "自動偵測條漫",
 			"disableThumbnails": "停用縮圖 (顯示檔名)",
 			"mouseWheelSensitivityInZoom": "縮放時滑鼠滾輪靈敏度",
@@ -366,7 +366,7 @@
 			"main": "導覽",
 			"folders": "導覽（資料夾）",
 			"files": "導覽（檔案）",
-			"ignoreSingleFoldersLibrary": "忽略單一資料夾(自動打開)",
+			"ignoreSingleFoldersLibrary": "忽略單一資料夾(自動開啟)",
 			"ignoreFilesRegex": {
 				"title": "忽略相符正規表達式或檔名樣式的檔案與資料夾",
 				"description": "如果您想隱藏一些檔案和資料夾，這很有用",
@@ -382,9 +382,9 @@
 				"noRegex": "無正規表達式或檔名樣式",
 				"invalidRegex": "無效的正規表達式或檔名樣式"
 			},
-			"openingBehaviorFolder": "打開資料夾時的行為",
+			"openingBehaviorFolder": "開啟資料夾時的行為",
 			"openingBehaviorFolderDescription": "設置在導覽時開啟資料夾時的行為",
-			"openingBehaviorFile": "打開檔案時的行為",
+			"openingBehaviorFile": "開啟檔案時的行為",
 			"openingBehaviorFileDescription": "設置在導覽時開啟檔案時的行為",
 			"openingBehavior": {
 				"fileList": "檔案列表",
@@ -395,13 +395,13 @@
 			},
 			"useTheFirstImageAsPoster": "使用第一張圖片作為封面(未設定封面時)",
 			"useTheFirstImageAsPosterInParentFolders": "使用第一張圖片作為上層資料夾的封面(僅在目前未設定時)",
-			"showFullPathLibrary": "打開書庫時顯示漫畫完整路徑",
-			"showFullPathOpened": "打開檔案或資料夾時顯示完整路徑",
+			"showFullPathLibrary": "開啟書庫時顯示漫畫完整路徑",
+			"showFullPathOpened": "開啟檔案或資料夾時顯示完整路徑",
 			"showLibraryPath": "在標題列中顯示書庫、最愛、標籤等",
 			"showFileExtension": "在檔案清單中顯示副檔名",
 			"openFilesInNewTab": "在新分頁開啟檔案 (僅適用於從 OpenComic 外部開啟的檔案)",
 			"openFilesInNewWindow": "在新視窗開啟檔案 (僅適用於從 OpenComic 外部開啟的檔案)",
-			"recentlyOpenedItems": "近期開啟項目的儲存數量"
+			"recentlyOpenedItems": "近期開啟過項目的儲存數量"
 		},
 		"saveImages": {
 			"main": "儲存圖片",
@@ -412,10 +412,10 @@
 		"startupBehavior": {
 			"main": "啟動行為",
 			"startInFullScreen": "全螢幕啟動 OpenComic",
-			"restoreTabsFromLastSession": "還原最後一次作業階段的分頁",
+			"restoreTabsFromLastSession": "還原上次作業階段的分頁",
 			"showAlwaysTabsBar": "總是顯示分頁列",
 			"startInContinueReading": "啟動時直接進入最後的閱讀",
-			"startOnlyFromLibrary": "僅限最後的閱讀來自書庫時",
+			"startOnlyFromLibrary": "僅限來自書庫最後的閱讀",
 			"startOnStartup": "開機時自動執行 OpenComic"
 		},
 		"theme": {
@@ -438,14 +438,14 @@
 		"macros": {
 			"main": "巨集",
 			"add": "新增巨集",
-			"addAction": "新增動作",
+			"addAction": "新增操作",
 			"empty": "無巨集",
-			"emptyActions": "無動作",
+			"emptyActions": "無操作",
 			"name": "巨集名稱",
 			"toggleMode": "切換模式",
 			"targetState": "目標狀態",
-			"delay": "動作延遲時間",
-			"description": "透過巨集，您可以使用單一快捷鍵觸發多個動作，並可在動作之間設定延遲時間",
+			"delay": "操作延遲時間",
+			"description": "透過巨集，您可以使用單一快捷鍵觸發多項操作，包括操作之間的延遲",
 			"deleteMacro": "刪除巨集",
 			"confirmDelete": "確定要刪除此巨集嗎？"
 		},
@@ -456,14 +456,14 @@
 			"disableGamepadInput": "停用遊戲手把輸入",
 			"contextMenu": "右鍵選單",
 			"gamepadMenu": "遊戲手把選單",
-			"useGamepad": "使用遊戲手把來改變動作",
+			"useGamepad": "使用遊戲手把來變更操作",
 			"restoreDefaults": "還原預設值",
 			"gamepadSensitivity": "遊戲手把靈敏度",
 			"gamepadDeadZone": "遊戲手把死區",
 			"screen": "螢幕",
 			"zoom": "縮放",
 			"menus": "選單",
-			"action": "動作",
+			"action": "操作",
 			"key1": "快捷鍵 1",
 			"key2": "快捷鍵 2",
 			"key3": "快捷鍵 3",
@@ -527,8 +527,8 @@
 	"menu": {
 		"file": {
 			"main": "檔案",
-			"openFile": "打開檔案",
-			"openFolder": "打開資料夾",
+			"openFile": "開啟檔案",
+			"openFolder": "開啟資料夾",
 			"addFile": "新增檔案",
 			"addFolder": "新增資料夾",
 			"quit": "關閉此應用程式"
@@ -685,12 +685,12 @@
 			}
 		},
 		"requestFileAccess": {
-			"title": "某些檔案的存取權限已遺失",
-			"description": "您可以從此處重新授予權限，以確保 OpenComic 正常運行。"
+			"title": "已遺失某些檔案的存取權限",
+			"description": "您可以從此處再次授予權限，以確保 OpenComic 正常運行。"
 		},
 		"release": {
 			"title": "新版本可用<b>{{releaseName}}</b>",
-			"body": "您可以從{{{linkStart}}}發行頁面{{{linkEnd}}}查看最新更改"
+			"body": "您可以從{{{linkStart}}}發行頁面{{{linkEnd}}}查看最新變更"
 		}
 	},
 	"buttons": {
@@ -712,7 +712,7 @@
 		"borrow": "借閱",
 		"subscribe": "訂閱",
 		"preview": "預覽",
-		"change": "修改",
+		"change": "變更",
 		"apply": "套用",
 		"close": "關閉",
 		"login": "登入"
