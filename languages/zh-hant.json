@@ -112,8 +112,8 @@
 		"nightMode": "暗夜模式",
 		"beta": "Beta",
 		"alpha": "Alpha",
-		"name": "",
-		"active": ""
+		"name": "名稱",
+		"active": "啟用"
 	},
 	"comics": {
 		"continueReading": "閱覽繼續",
@@ -326,7 +326,7 @@
 		"general": "一般",
 		"reading": {
 			"main": "閱覽偏好",
-			"maxMargin": "最大水平和垂直邊距",
+			"maxMargin": "水平及垂直邊距最大上限",
 			"globalZoom": "使用全域縮放，而非逐張圖片縮放（垂直閱覽）",
 			"globalZoomSlide": "使用全域縮放，而非逐張圖片縮放（滑動閱覽）",
 			"moveZoomWithMouse": "使用游標快速移動(停用拖放移動)",
@@ -432,12 +432,12 @@
 				"yellow": "黃色"
 			},
 			"customThemes": {
-				"main": "",
-				"description": "",
-				"noThemes": "",
-				"add": "",
-				"delete": "",
-				"confirmDelete": ""
+				"main": "自訂主題",
+				"description": "選取 CSS 檔案以新增自訂主題，檔案可以包含 import 陳述式，詳情請參閱說明文件",
+				"noThemes": "無自訂主題",
+				"add": "新增自訂主題",
+				"delete": "刪除自訂主題",
+				"confirmDelete": "確定要刪除此自訂主題嗎？"
 			}
 		},
 		"releases": {
@@ -517,10 +517,10 @@
 		},
 		"storage": {
 			"main": "儲存",
-			"useCustomCacheAndTmpFolder": "使用自訂資料夾存放快取與暫存檔 (現有檔案將被複製到新位置)",
+			"useCustomCacheAndTmpFolder": "使用自訂資料夾存放快取與暫存檔案 (現有檔案將被複製到新位置)",
 			"cache": "快取",
 			"cacheDescription": "這裡儲存壓縮檔的縮圖和索引，除非它很大或出現相關錯誤，否則不建議清理",
-			"cacheMaxSize": "最大快取大小",
+			"cacheMaxSize": "快取最大上限",
 			"cacheMaxSizeDescription": "當快取超出此容量限制時，將被移除檔案，並優先移除較舊且未使用的檔案",
 			"cacheMaxOld": "快取最長保留時間",
 			"cacheMaxOldDescription": "當檔案超過此時間未被使用時，將被從快取中移除",
@@ -528,7 +528,7 @@
 			"temporaryFiles": "暫存檔案",
 			"temporaryFilesDescription": "壓縮檔案會在有需要時於此進行解壓縮，關閉 OpenComic 時會移除部分檔案",
 			"removeTemporaryFiles": "移除暫存檔案",
-			"temporaryFilesMaxSize": "最大暫存檔案大小",
+			"temporaryFilesMaxSize": "暫存檔案最大上限",
 			"temporaryFilesMaxSizeDescription": "當暫存檔案超出此容量限制時將被移除，並優先移除較舊且未使用的檔案",
 			"temporaryFilesMaxOld": "暫存檔案最長保留時間",
 			"temporaryFilesMaxOldDescription": "當暫存檔案超過此時間未被使用時將被移除"
